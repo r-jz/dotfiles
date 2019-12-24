@@ -1,0 +1,27 @@
+[[plugins]]
+repo = 'Shougo/dein.vim'
+
+[[plugins]]
+repo = 'autozimu/LanguageClient-neovim'
+rev = 'next'
+build = 'bash install.sh'
+hook_add = '''
+source ~/.config/nvim/config/lsp-neovim.rc.vim
+'''
+
+[[plugins]]
+repo = 'Shougo/deoplete.nvim'
+hook_add = '''
+source ~/.config/nvim/config/deoplete.rc.vim
+'''
+
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+hook_add = '''
+source ~/.config/nvim/config/lightline.rc.vim
+'''
+[[plugins]]
+repo = "junegunn/fzf.vim"
+hook_add = '''
+source ~/.config/nvim/config/fzf.rc.vim
+'''

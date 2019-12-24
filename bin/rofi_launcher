@@ -1,0 +1,19 @@
+#!/bin/zsh
+ 
+opts=(
+  ## config
+  -show drun
+  -modi 'drun,window,run'
+  -font 'Noto Sans 13'
+  -fixed-num-lines
+  -hide-scrollbar
+  -sidebar-mode
+  ## Keyboard shortcut
+  -kb-cancel        'Escape,Control+g,Control+bracketleft,Control+c'
+  -kb-mode-next     'Shift+Right,Control+i,Control+Tab'
+  -kb-mode-previous 'Shift+Left,Control+Shift+i'
+  "$@"
+)
+
+rofi "${opts[@]}"
+

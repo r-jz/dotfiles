@@ -1,0 +1,18 @@
+[[plugins]]
+ repo = 'cespare/vim-toml'
+ on_ft = 'toml'
+
+[[plugins]]
+repo = 'numirias/semshi'
+on_ft = 'python'
+
+[[plugins]]
+repo = 'Shougo/denite.nvim'
+on_cmd = "Denite"
+on_i = 1
+hook_add = '''
+source ~/.config/nvim/config/denite_source.rc.vim
+'''
+hook_post_source = '''
+source ~/.config/nvim/config/denite_post_source.rc.vim
+'''
