@@ -3,8 +3,8 @@
 NVIM_ROOT=$(realpath $(dirname $0)/nvim)
 CONFIG_DIR=$(realpath ${XDG_CONFIG_HOME:-$HOME/.config}/nvim)
 
-echo $NVIM_ROOT
-echo $CONFIG_DIR
+echo "NVIM ROOT: $NVIM_ROOT"
+echo "CONFIG DIR: $CONFIG_DIR"
 
 if [ ! -d $CONFIG_DIR ]; then
     echo "$CONFIG_DIR is not exists!"
@@ -14,8 +14,12 @@ fi
 
 function make_link(){
     cd $CONFIG_DIR
-    echo "Make symlink to $1"
-    ln -s $1
+    if [ ! -e $CONFIG_DIR/$(basename $1) ]; then
+        echo "Make symlink to $1"
+        ln -s $1
+    else
+        echo "$CONFIG_DIR/$(basename $1) is already exists"
+    fi
 }
 
 for config in $NVIM_ROOT/*; do
