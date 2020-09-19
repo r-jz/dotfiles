@@ -38,9 +38,10 @@ let mapleader = "\<Space>"
 "endif
 
 syntax on
-
+set termguicolors
+colorscheme NeoSolarized
 set background=dark
-let g:solarized_termcolors=256
+" let g:solarized_termcolors=256
 colorscheme solarized
 " colorscheme night-owl
 
