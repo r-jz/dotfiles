@@ -19,8 +19,13 @@ set noswapfile
 set showcmd
 set hidden
 set autoread
-set nobackup
 set splitright
+
+" From coc nvim sample
+" Some servers have issues with backup files, see #649.
+set nowritebackup
+set nobackup
+
 
 set wildmenu
 

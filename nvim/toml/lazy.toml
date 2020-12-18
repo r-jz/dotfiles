@@ -6,7 +6,18 @@
 repo = "rust-lang/rust.vim"
 on_ft = "rust"
 
+#[[plugins]]
+#repo = "racer-rust/vim-racer"
+#on_ft = "rust"
+#hook_source = '''
+#    let g:racer_cmd = "/home/ryoj/.local/bin/racer"
+#    let g;racer_experimental_completer = 1
+#'''
+
+[[plugins]]
+repo = 'posva/vim-vue'
+on_ft = 'vue'
+
 [[plugins]]
 repo = 'numirias/semshi'
 on_ft = 'python'
-

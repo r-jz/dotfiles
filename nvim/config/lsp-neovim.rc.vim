@@ -6,7 +6,7 @@ let g:LanguageClient_serverCommands = {}
 let g:LanguageClient_serverCommands = {
     \ 'python': ['pyls'],
     \ 'c': ['ccls'],
-    \ 'rust': ['rustup', 'run', 'stable', 'rls']
+    \ 'rust': ['rust-analyzer']
     \ }
 
 augroup LanguageClient_config
@@ -15,6 +15,7 @@ augroup LanguageClient_config
     autocmd User LanguageClientStopped setlocal signcolumn=auto
 augroup END
 
+let g:LanguageClient_loggingFile =  expand('~/.local/share/nvim/LanguageClient.log') 
 let g:LanguageClient_autoStart = 1
 let g:LanguageClient_useFloatingHover = 1
 nnoremap <Leader>lh :call LanguageClient_textDocument_hover()<CR>

@@ -7,22 +7,30 @@ hook_add = '''
 source ~/.config/nvim/config/neoterm.rc.vim
 '''
 
-[[plugins]]
-repo = "ncm2/float-preview"
+#[[plugins]]
+#repo = "ncm2/float-preview"
 
 
+#[[plugins]]
+#repo = 'autozimu/LanguageClient-neovim'
+#rev = 'next'
+#build = 'bash install.sh'
+#hook_add = '''
+#source ~/.config/nvim/config/lsp-neovim.rc.vim
+#'''
+
+#[[plugins]]
+#repo = 'Shougo/deoplete.nvim'
+#hook_add = '''
+#source ~/.config/nvim/config/deoplete.rc.vim
+#'''
+
 [[plugins]]
-repo = 'autozimu/LanguageClient-neovim'
-rev = 'next'
-build = 'bash install.sh'
+repo = 'neoclide/coc.nvim'
+merge = 0
+rev = 'release'
 hook_add = '''
-source ~/.config/nvim/config/lsp-neovim.rc.vim
-'''
-
-[[plugins]]
-repo = 'Shougo/deoplete.nvim'
-hook_add = '''
-source ~/.config/nvim/config/deoplete.rc.vim
+source ~/.config/nvim/config/cocconfig.vim
 '''
 
 [[plugins]]
