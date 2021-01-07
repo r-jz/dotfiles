@@ -27,8 +27,9 @@ source ~/.config/nvim/config/neoterm.rc.vim
 
 [[plugins]]
 repo = 'neoclide/coc.nvim'
-merge = 0
-rev = 'release'
+merged = 0
+rev = 'master'
+build = "yarn install --frozen-lockfile"
 hook_add = '''
 source ~/.config/nvim/config/cocconfig.vim
 '''
