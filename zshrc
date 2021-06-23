@@ -2,7 +2,7 @@ autoload -U compinit
 compinit -u
 zstyle ':completion:*:default' menu select=2
 
-eval `dircolors -b`
+eval `dircolors ~/.dir_colors/main`
 autoload -U colors
 colors
 zstyle ':completion:*' verbose yes
@@ -37,7 +37,6 @@ setopt pushd_ignore_dups
 # for vim
 alias vim="nvim"
 # for develop
-alias cda="cd $HOME/github.com/ais-research"
 alias cdo="cd $HOME/github.com/okamotonr"
 alias cdg="cd $HOME/github.com"
 # for ls
@@ -49,6 +48,9 @@ alias l="ls -m --color=auto"
 alias grep="grep --color=auto"
 # for nvimpager
 alias npg="nvimpager"
+# stack
+alias ghci="stack ghci"
+alias ghc="stack ghc"
 
 # fzf
 source /usr/share/fzf/key-bindings.zsh
@@ -57,16 +59,13 @@ source /usr/share/fzf/completion.zsh
 # Path to users bin
 export PATH=$PATH:$HOME/.bin:$HOME/.local/bin:$HOME/.npm-global/bin
 
-# for nvim pager
-#Nexport PAGER=nvimpager
-
-### Added by Zplugin's installer
-source "$HOME/.zplugin/bin/zplugin.zsh"
-autoload -Uz _zplugin
-(( ${+_comps} )) && _comps[zplugin]=_zplugin
+### Added by Zinit's installer
+source "$HOME/.zinit/bin/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
 ### End of Zplugin installer's chunk
 
 ### From User
-zplugin ice wait'!0'; zplugin load zsh-users/zsh-completions
-zplugin ice wait'!0'; zplugin load zsh-users/zsh-syntax-highlighting
-zplugin ice wait'!0'; zplugin light chrissicool/zsh-256color
+zinit ice wait'!0' lucid; zinit load zsh-users/zsh-completions
+zinit ice wait'!0' lucid; zinit load zsh-users/zsh-syntax-highlighting
+zinit ice wait'!0' lucid; zinit light chrissicool/zsh-256color

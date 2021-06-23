@@ -7,7 +7,7 @@ filetype plugin indent off
 syntax off
 
 let s:base_dir = expand('~/.config/nvim')
-let s:dein_dir = s:base_dir . '/plugins'
+let s:dein_dir = expand('~/.cache/dein')
 let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
 let s:toml_dir = s:base_dir . '/toml'
 
