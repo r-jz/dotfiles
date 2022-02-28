@@ -52,8 +52,8 @@ set_keymap("n", "<C-j>", "<C-w>j", { noremap = true })
 set_keymap("n", "<C-k>", "<C-w>k", { noremap = true })
 set_keymap("n", "<C-l>", "<C-w>l", { noremap = true })
 
-set_keymap("n", "<C-Down>", "<Esc>bnext<CR>", { noremap = true, silent = true })
-set_keymap("n", "<C-Up>", "<Esc>bNext<CR>", { noremap = true, silent = true })
+set_keymap("n", "<C-Down>", "<cmd>bnext<CR>", { noremap = true, silent = false })
+set_keymap("n", "<C-Up>", "<cmd>bNext<CR>", { noremap = true, silent = false })
 
 cmd("syntax on")
 

@@ -1,18 +1,29 @@
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 local lsp_installer = require("nvim-lsp-installer")
+local trouble = require("trouble")
+local lsp_signature = require("lsp_signature")
 
 local remapopts = { noremap = true, silent = true }
-vim.api.nvim_set_keymap("n", "<space>e", "<cmd>lua vim.diagnostic.open_float()<CR>", remapopts)
+vim.api.nvim_set_keymap("n", "<Leader>e", "<cmd>lua vim.diagnostic.open_float()<CR>", remapopts)
 vim.api.nvim_set_keymap("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<CR>", remapopts)
 vim.api.nvim_set_keymap("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<CR>", remapopts)
-vim.api.nvim_set_keymap("n", "<space>q", "<cmd>lua vim.diagnostic.setloclist()<CR>", remapopts)
+vim.api.nvim_set_keymap("n", "<Leader>q", "<cmd>lua vim.diagnostic.setloclist()<CR>", remapopts)
 
+vim.api.nvim_set_keymap("n", "<Leader>xx", "<cmd>TroubleToggle<CR>", remapopts)
+vim.api.nvim_set_keymap("n", "<leader>xw", "<cmd>Trouble workspace_diagnostics<cr>", remapopts)
+vim.api.nvim_set_keymap("n", "<leader>xd", "<cmd>Trouble document_diagnostics<cr>", remapopts)
+vim.api.nvim_set_keymap("n", "<leader>xl", "<cmd>Trouble loclist<cr>", remapopts)
+vim.api.nvim_set_keymap("n", "<leader>xq", "<cmd>Trouble quickfix<cr>", remapopts)
+
+-- setup trouble
+trouble.setup()
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
   -- Enable completion triggered by <c-x><c-o>
   vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+  lsp_signature.on_attach()
 
   -- Mappings.
   -- See `:help vim.lsp.*` for documentation on any of the below functions
@@ -31,11 +42,11 @@ local on_attach = function(client, bufnr)
     "<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>",
     opts
   )
-  vim.api.nvim_buf_set_keymap(bufnr, "n", "<Leader>D", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
+  vim.api.nvim_buf_set_keymap(bufnr, "n", "<Leader>", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
   vim.api.nvim_buf_set_keymap(bufnr, "n", "<Leader>rn", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
   vim.api.nvim_buf_set_keymap(bufnr, "n", "<Leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
   vim.api.nvim_buf_set_keymap(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
-  vim.api.nvim_buf_set_keymap(bufnr, "n", "<Leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+  vim.api.nvim_buf_set_keymap(bufnr, "n", "<Leader>lf", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
 end
 
 -- Change diagnosticIcon
@@ -89,11 +100,14 @@ local null_ls = require("null-ls")
 local formatting = null_ls.builtins.formatting
 
 local sources = {
-  formatting.autopep8,
+  formatting.autopep8.with({
+    args = { "-", "-a" },
+  }),
   formatting.stylua,
 }
 null_ls.setup({
   -- you can reuse a shared lspconfig on_attach callback here
+  debug = true,
   sources = sources,
   on_attach = function(client)
     if client.resolved_capabilities.document_formatting then
