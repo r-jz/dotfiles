@@ -244,7 +244,7 @@ _G.packer_plugins = {
 
 time([[Defining packer_plugins]], false)
 local module_lazy_loads = {
-  ["^dap"] = "nvim-dap-python",
+  ["^dap"] = "nvim-dap",
   ["^telescope"] = "telescope.nvim"
 }
 local lazy_load_called = {['packer.load'] = true}
@@ -272,6 +272,10 @@ if not vim.g.packer_custom_loader_enabled then
   vim.g.packer_custom_loader_enabled = true
 end
 
+-- Setup for: nvim-tree.lua
+time([[Setup for nvim-tree.lua]], true)
+require('config.nvim_tree_setup')
+time([[Setup for nvim-tree.lua]], false)
 -- Setup for: nvim-dap
 time([[Setup for nvim-dap]], true)
 require('config.dap_setup')
@@ -280,10 +284,6 @@ time([[Setup for nvim-dap]], false)
 time([[Setup for telescope.nvim]], true)
 require('config.telescope_setup')
 time([[Setup for telescope.nvim]], false)
--- Setup for: nvim-tree.lua
-time([[Setup for nvim-tree.lua]], true)
-require('config.nvim_tree_setup')
-time([[Setup for nvim-tree.lua]], false)
 
 -- Command lazy-loads
 time([[Defining lazy-load commands]], true)
