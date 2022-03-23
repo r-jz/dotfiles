@@ -5,10 +5,14 @@ local set_keymap = api.nvim_set_keymap
 local o, wo, bo = vim.o, vim.wo, vim.bo
 
 vim.g.mapleader = " "
+vim.g.did_load_filetypes = 1
+vim.g.loaded_python_provider = 0
+vim.g.loaded_python3_provider = 0
 
 --o.title = true
 o.updatetime = 250
--- wo.number = true
+wo.number = true
+wo.relativenumber = true
 -- indent
 bo.autoindent = true
 bo.smartindent = true
@@ -39,7 +43,10 @@ o.showmatch = true
 -- color scheme
 o.termguicolors = true
 o.background = "dark"
-cmd("colorscheme night-owl")
+cmd("colorscheme tokyonight")
+
+-- clipboard
+vim.opt.clipboard:append({ "unnamedplus" })
 
 -- keymap
 set_keymap("n", "j", "gj", { noremap = true })

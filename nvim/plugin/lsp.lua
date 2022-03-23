@@ -17,7 +17,7 @@ vim.api.nvim_set_keymap("n", "<leader>xl", "<cmd>Trouble loclist<cr>", remapopts
 vim.api.nvim_set_keymap("n", "<leader>xq", "<cmd>Trouble quickfix<cr>", remapopts)
 
 -- setup trouble
-trouble.setup()
+trouble.setup({ mode = "document_diagnostics" })
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)

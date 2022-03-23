@@ -17,12 +17,21 @@ local function init()
   use({ "wbthomason/packer.nvim", opt = true })
 
   use({ "lewis6991/impatient.nvim" })
+  use({ "nathom/filetype.nvim" })
 
   -- colorsheme
   use({ "haishanh/night-owl.vim" })
+  use({ "folke/tokyonight.nvim" })
+  use({ "shaunsingh/moonlight.nvim" })
 
   -- lexima
   use({ "cohama/lexima.vim", event = "InsertEnter *" })
+
+  -- openbrowser
+  use({ "tyru/open-browser.vim", setup = [[require('config.openbrowser_setup')]] })
+
+  -- sandwich
+  use({ "machakann/vim-sandwich", event = "InsertEnter *" })
 
   -- trouble
   use({ "folke/trouble.nvim", requires = { "kyazdani42/nvim-web-devicons" } })
@@ -52,14 +61,22 @@ local function init()
     requires = {
       "L3MON4D3/LuaSnip",
       "onsails/lspkind-nvim",
+      "saadparwaiz1/cmp_luasnip",
       { "hrsh7th/cmp-buffer", after = "nvim-cmp" },
       { "hrsh7th/cmp-nvim-lsp", after = "nvim-cmp" },
       { "hrsh7th/cmp-cmdline", after = "nvim-cmp" },
       { "hrsh7th/cmp-path", after = "nvim-cmp" },
+      { "hrsh7th/cmp-nvim-lua", after = "nvim-cmp" },
     },
-    config = [[require('config.cmp')]],
+    config = function()
+      require("config.cmp")
+      require("config.luasnippet")
+    end,
     event = "InsertEnter *",
   })
+
+  -- toggleterm
+  use({ "akinsho/toggleterm.nvim" })
 
   -- telescope
   use({
@@ -79,19 +96,21 @@ local function init()
     {
       "mfussenegger/nvim-dap",
       setup = [[require('config.dap_setup')]],
-      config = [[require('config.dap')]],
+      config = [[require('config.nvimdap')]],
       module = { "dap" },
     },
     {
       "rcarriga/nvim-dap-ui",
-      config = [[require('config.dap_ui')]],
       requires = { "mfussenegger/nvim-dap" },
       after = { "nvim-dap" },
+      config = [[require('config.dapui')]],
     },
     {
       "mfussenegger/nvim-dap-python",
       requires = { "mfussenegger/nvim-dap" },
-      module = { "dap" },
+      after = { "nvim-dap" },
+      config = [[require('config.debugpy')]],
+      ft = "python",
     },
   })
 
