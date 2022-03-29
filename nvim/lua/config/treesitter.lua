@@ -33,6 +33,12 @@ ts_configs.setup({
       node_decremental = "grm",
     },
   },
+  rainbow = {
+    enable = true,
+  },
+  autopairs = {
+    enable = true,
+  },
 })
 
 vim.opt.foldmethod = "expr"

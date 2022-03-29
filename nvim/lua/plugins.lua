@@ -24,9 +24,6 @@ local function init()
   use({ "folke/tokyonight.nvim" })
   use({ "shaunsingh/moonlight.nvim" })
 
-  -- lexima
-  use({ "cohama/lexima.vim", event = "InsertEnter *" })
-
   -- openbrowser
   use({ "tyru/open-browser.vim", setup = [[require('config.openbrowser_setup')]] })
 
@@ -48,7 +45,15 @@ local function init()
   })
 
   -- treesitter
-  use({ "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" })
+  use({
+    "nvim-treesitter/nvim-treesitter",
+    run = ":TSUpdate",
+    event = "BufRead",
+    cmd = { "TSInstall", "TSInstallInfo", "TSInstallSync", "TSUpdate", "TSUpdateSync", "TSDisableAll", "TSEnableAll" },
+    config = [[require('config.treesitter')]],
+  })
+  use({ "p00f/nvim-ts-rainbow", after = "nvim-treesitter" })
+  use({ "windwp/nvim-autopairs", event = "InsertEnter *", config = [[require('config.autopairs')]] })
 
   use({
     "nvim-lualine/lualine.nvim",
@@ -120,11 +125,18 @@ local function init()
     requires = { "kyazdani42/nvim-web-devicons" },
     setup = [[require('config.nvim_tree_setup')]],
     config = [[require('config.nvim_tree')]],
-    cmd = { "NvimTreeToggle" },
+    -- cmd = { "NvimTreeToggle" },
   })
 
   -- null ls
   use({ "jose-elias-alvarez/null-ls.nvim", requires = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" } })
+  -- notify
+  use({
+    "rcarriga/nvim-notify",
+    config = function()
+      require("notify").setup()
+    end,
+  })
 end
 
 local plugins = setmetatable({}, {
