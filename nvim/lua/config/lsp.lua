@@ -55,6 +55,7 @@ for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
+
 vim.diagnostic.config({
   virtual_text = false,
   signs = true,
@@ -63,6 +64,13 @@ vim.diagnostic.config({
   severity_sort = false,
 })
 
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+  border = "rounded",
+})
+
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+  border = "rounded",
+})
 -- Float diahnostic window when
 vim.cmd([[autocmd! CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]])
 -- Use a loop to conveniently call 'setup' on multiple servers and
@@ -107,7 +115,6 @@ local sources = {
 }
 null_ls.setup({
   -- you can reuse a shared lspconfig on_attach callback here
-  debug = true,
   sources = sources,
   on_attach = function(client)
     if client.resolved_capabilities.document_formatting then

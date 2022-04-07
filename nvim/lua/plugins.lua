@@ -36,28 +36,33 @@ local function init()
   -- lsp config
   use({
     "neovim/nvim-lspconfig",
+    event = { "BufWinEnter" },
     requires = {
       "ray-x/lsp_signature.nvim",
       "williamboman/nvim-lsp-installer",
       "hrsh7th/cmp-nvim-lsp",
       "folke/trouble.nvim",
     },
+    config = [[require('config.lsp')]],
   })
 
   -- treesitter
   use({
     "nvim-treesitter/nvim-treesitter",
     run = ":TSUpdate",
-    event = "BufRead",
+    event = { "BufRead", "BufNewFile" },
     cmd = { "TSInstall", "TSInstallInfo", "TSInstallSync", "TSUpdate", "TSUpdateSync", "TSDisableAll", "TSEnableAll" },
     config = [[require('config.treesitter')]],
   })
   use({ "p00f/nvim-ts-rainbow", after = "nvim-treesitter" })
+  use({ "eddiebergman/nvim-treesitter-pyfold", ft = "python", after = "nvim-treesitter" })
   use({ "windwp/nvim-autopairs", event = "InsertEnter *", config = [[require('config.autopairs')]] })
 
+  -- statusline
   use({
     "nvim-lualine/lualine.nvim",
     requires = { "kyazdani42/nvim-web-devicons", opt = true },
+    config = [[require('config.lualine')]],
   })
 
   -- completion
@@ -80,8 +85,16 @@ local function init()
     event = "InsertEnter *",
   })
 
+  -- indent blankline
+  use({ "lukas-reineke/indent-blankline.nvim", event = "BufRead", config = [[require('config.indent_blankline')]] })
+
   -- toggleterm
-  use({ "akinsho/toggleterm.nvim" })
+  use({
+    "akinsho/toggleterm.nvim",
+    cmd = "ToggleTerm",
+    config = [[require('config.toggleterm')]],
+    setup = [[require('config.toggleterm_setup')]],
+  })
 
   -- telescope
   use({

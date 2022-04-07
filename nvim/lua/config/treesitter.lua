@@ -24,6 +24,10 @@ ts_configs.setup({
     additional_vim_regex_highlighting = false,
     use_languagetree = true,
   },
+  pyfold = {
+    enable = true,
+    custom_foldtext = true,
+  },
   incremental_selection = {
     enable = true,
     keymaps = {
