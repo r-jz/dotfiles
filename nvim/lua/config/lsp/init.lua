@@ -3,6 +3,7 @@
 local lsp_installer = require("nvim-lsp-installer")
 local trouble = require("trouble")
 local lsp_signature = require("lsp_signature")
+local server_configs = require("config.lsp.server_config")
 
 local remapopts = { noremap = true, silent = true }
 vim.api.nvim_set_keymap("n", "<Leader>e", "<cmd>lua vim.diagnostic.open_float()<CR>", remapopts)
@@ -83,17 +84,20 @@ local function disable_lsp_format(client, bufnr)
 end
 
 lsp_installer.on_server_ready(function(server)
-  local opts = {}
-  if server.name == "sumneko_lua" then
-    opts = {
-      settings = {
-        Lua = {
-          diagnostics = {
-            globals = { "vim", "use" },
-          },
-        },
-      },
-    }
+  local config = server_configs[server.name]
+  local opts = server:get_default_options()
+  local disable_format = false
+  if config ~= nil then
+    local config_opts = config.opts
+    if config_opts ~= nil then
+      opts = config_opts
+    end
+    local config_disable_format = config.disable_format
+    if config_disable_format ~= nil then
+      disable_format = config_disable_format
+    end
+  end
+  if disable_format then
     opts.on_attach = disable_lsp_format
   else
     opts.on_attach = on_attach
@@ -112,7 +116,9 @@ local sources = {
     args = { "-", "-a" },
   }),
   formatting.stylua,
+  formatting.isort,
 }
+
 null_ls.setup({
   -- you can reuse a shared lspconfig on_attach callback here
   sources = sources,

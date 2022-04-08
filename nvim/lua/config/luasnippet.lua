@@ -17,7 +17,7 @@ local ls = require("luasnip")
 --local dl = require("luasnip.extras").dynamic_lambda
 --local fmt = require("luasnip.extras.fmt").fmt
 --local fmta = require("luasnip.extras.fmt").fmta
---local types = require("luasnip.util.types")
+local types = require("luasnip.util.types")
 --local conds = require("luasnip.extras.expand_conditions")
 
 ls.config.set_config({
