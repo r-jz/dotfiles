@@ -1,4 +1,5 @@
-local ls = require("luasnip")
+local luasnip = require("luasnip")
+
 -- some shorthands...
 --local s = ls.snippet
 --local sn = ls.snippet_node
@@ -18,9 +19,10 @@ local ls = require("luasnip")
 --local fmt = require("luasnip.extras.fmt").fmt
 --local fmta = require("luasnip.extras.fmt").fmta
 local types = require("luasnip.util.types")
+local loaders = require("luasnip.loaders.from_lua")
 --local conds = require("luasnip.extras.expand_conditions")
 
-ls.config.set_config({
+luasnip.config.set_config({
   history = true,
   -- Update more often, :h events for more info.
   updateevents = "TextChanged,TextChangedI",
@@ -37,3 +39,30 @@ ls.config.set_config({
     },
   },
 })
+
+local t = function(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
+_G.snippet_expand_or_jump = function()
+  if luasnip.expand_or_jumpable then
+    return t("<Plug>luasnip-expand-or-jump")
+  end
+  return ""
+end
+
+_G.snippet_backword = function()
+  if luasnip.jumpable(-1) then
+    return t("<Plug>luasnip-jump-prev")
+  end
+  return ""
+end
+
+vim.api.nvim_set_keymap("i", "<C-k>", "v:lua.snippet_expand_or_jump()", { expr = true })
+vim.api.nvim_set_keymap("s", "<C-k>", "v:lua.snippet_expand_or_jump()", { expr = true })
+vim.api.nvim_set_keymap("i", "<C-j>", "v:lua.snippet_backword()", { expr = true })
+vim.api.nvim_set_keymap("s", "<C-j>", "v:lua.snippet_backword()", { expr = true })
+vim.api.nvim_set_keymap("i", "<C-l>", "<Plug>luasnip-next-choice", {})
+vim.api.nvim_set_keymap("s", "<C-l>", "<Plug>luasnip-next-choice", {})
+
+loaders.load()

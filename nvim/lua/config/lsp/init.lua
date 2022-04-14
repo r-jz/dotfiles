@@ -115,8 +115,8 @@ local sources = {
   formatting.autopep8.with({
     args = { "-", "-a" },
   }),
-  formatting.stylua,
   formatting.isort,
+  formatting.stylua,
 }
 
 null_ls.setup({

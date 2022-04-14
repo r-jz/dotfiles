@@ -24,11 +24,17 @@ local server_configs = {
       settings = {
         python = {
           analysis = {
-            typeCheckingMode = "off",
+            typeCheckingMode = "basic",
+            stubPath = os.getenv("HOME") .. "/typings",
+            useLibraryCodeForTypes = false,
+            diagnosticMode = "openFilesOnly",
           },
         },
       },
     },
+  },
+  pylsp = {
+    disable_format = true,
   },
 }
 
