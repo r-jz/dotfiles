@@ -11,6 +11,7 @@ vim.g.loaded_python3_provider = 0
 
 --o.title = true
 o.updatetime = 250
+wo.signcolumn = "yes"
 wo.number = true
 wo.relativenumber = true
 -- indent
