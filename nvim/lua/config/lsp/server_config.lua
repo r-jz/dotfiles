@@ -36,6 +36,15 @@ local server_configs = {
   pylsp = {
     disable_format = true,
   },
+  hls = {
+    opts = {
+      settings = {
+        haskell = {
+          formattingProvider = "stylish-haskell",
+        },
+      },
+    },
+  },
 }
 
 return server_configs

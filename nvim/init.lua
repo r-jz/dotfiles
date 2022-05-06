@@ -55,6 +55,8 @@ set_keymap("n", "k", "gk", { noremap = true })
 set_keymap("v", "j", "gj", { noremap = true })
 set_keymap("v", "k", "gk", { noremap = true })
 
+vim.keymap.set("t", "<C-p>", "<Up>")
+
 set_keymap("n", "<C-h>", "<C-w>h", { noremap = true })
 set_keymap("n", "<C-j>", "<C-w>j", { noremap = true })
 set_keymap("n", "<C-k>", "<C-w>k", { noremap = true })
