@@ -27,6 +27,9 @@ local function init()
   -- openbrowser
   use({ "tyru/open-browser.vim", setup = [[require('config.openbrowser_setup')]] })
 
+  -- capture
+  use({ "tyru/capture.vim", cmd = { "Capture" } })
+
   -- sandwich
   use({ "machakann/vim-sandwich", event = "InsertEnter *" })
 
@@ -58,6 +61,26 @@ local function init()
   use({ "p00f/nvim-ts-rainbow", after = "nvim-treesitter" })
   use({ "eddiebergman/nvim-treesitter-pyfold", ft = "python", after = "nvim-treesitter" })
   use({ "windwp/nvim-autopairs", event = "InsertEnter *", config = [[require('config.autopairs')]] })
+
+  -- neogit
+  use({
+    "TimUntersberger/neogit",
+    cmd = "Neogit",
+    requires = {
+      "nvim-lua/plenary.nvim",
+      "sindrets/diffview.nvim",
+    },
+    config = [[require('config.neogit')]],
+  })
+
+  -- git-conflict
+  use({
+    "akinsho/git-conflict.nvim",
+    config = function()
+      require("git-conflict").setup()
+    end,
+    event = "BufWinEnter",
+  })
 
   -- statusline
   use({

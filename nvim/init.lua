@@ -18,6 +18,7 @@ wo.relativenumber = true
 bo.autoindent = true
 bo.smartindent = true
 bo.expandtab = true
+o.expandtab = true
 bo.tabstop = 2
 bo.softtabstop = -1
 bo.shiftwidth = 0
