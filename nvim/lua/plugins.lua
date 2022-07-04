@@ -50,6 +50,15 @@ local function init()
   })
   use({ "j-hui/fidget.nvim", after = "nvim-lsp-installer", config = [[require('config.fidget')]] })
 
+  -- quickfix
+  use({
+    { "kevinhwang91/nvim-bqf", ft = "qf" },
+    { "gabrielpoca/replacer.nvim", ft = "qf" },
+  })
+
+  -- iron repl
+  use({ "hkupty/iron.nvim", config = [[require('config.iron')]], cmd = "IronRepl" })
+
   -- treesitter
   use({
     "nvim-treesitter/nvim-treesitter",
@@ -61,6 +70,9 @@ local function init()
   use({ "p00f/nvim-ts-rainbow", after = "nvim-treesitter" })
   use({ "eddiebergman/nvim-treesitter-pyfold", ft = "python", after = "nvim-treesitter" })
   use({ "windwp/nvim-autopairs", event = "InsertEnter *", config = [[require('config.autopairs')]] })
+
+  -- smart split
+  use({ "mrjones2014/smart-splits.nvim", event = "WinEnter", config = [[require('config.smartsplits')]] })
 
   -- neogit
   use({
