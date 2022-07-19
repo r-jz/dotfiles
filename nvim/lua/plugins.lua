@@ -39,25 +39,18 @@ local function init()
   -- lsp config
   use({
     "neovim/nvim-lspconfig",
-    event = { "BufWinEnter" },
+    --event = { "InsertEnter *" },
     requires = {
       "ray-x/lsp_signature.nvim",
       "williamboman/nvim-lsp-installer",
       "hrsh7th/cmp-nvim-lsp",
       "folke/trouble.nvim",
+      "simrat39/rust-tools.nvim",
     },
     config = [[require('config.lsp')]],
   })
-  use({ "j-hui/fidget.nvim", after = "nvim-lsp-installer", config = [[require('config.fidget')]] })
-
-  -- rust-tools
-  use({
-    "simrat39/rust-tools.nvim",
-    ft = "rust",
-    config = function()
-      require("rust-tools").setup()
-    end,
-  })
+  -- fidget
+  use({ "j-hui/fidget.nvim", config = [[require('config.fidget')]] })
 
   -- quickfix
   use({

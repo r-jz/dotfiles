@@ -92,7 +92,7 @@ local function disable_lsp_format(client, bufnr)
   on_attach(client, bufnr)
 end
 
-lsp_installer.setup()
+lsp_installer.setup({})
 
 local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
@@ -114,6 +114,9 @@ for server_name, configs in pairs(server_configs) do
     capabilities = capabilities,
   })
 end
+
+-- rust
+require("rust-tools").setup()
 
 -- null-ls
 local null_ls = require("null-ls")

@@ -33,9 +33,6 @@ local server_configs = {
       },
     },
   },
-  rust_analyzer = {
-    settings = {},
-  },
 }
 
 return server_configs
