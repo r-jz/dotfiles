@@ -50,6 +50,15 @@ local function init()
   })
   use({ "j-hui/fidget.nvim", after = "nvim-lsp-installer", config = [[require('config.fidget')]] })
 
+  -- rust-tools
+  use({
+    "simrat39/rust-tools.nvim",
+    ft = "rust",
+    config = function()
+      require("rust-tools").setup()
+    end,
+  })
+
   -- quickfix
   use({
     { "kevinhwang91/nvim-bqf", ft = "qf" },
@@ -183,7 +192,7 @@ local function init()
   use({
     "rcarriga/nvim-notify",
     config = function()
-      require("notify").setup()
+      vim.notify = require("notify")
     end,
   })
 end
