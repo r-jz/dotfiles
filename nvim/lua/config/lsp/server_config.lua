@@ -1,3 +1,4 @@
+local util = require("lspconfig.util")
 local server_configs = {
   -- lua lsp
   sumneko_lua = {
@@ -12,7 +13,6 @@ local server_configs = {
         },
       },
     },
-    disable_format = true,
   },
   pyright = {
     settings = {
@@ -30,6 +30,16 @@ local server_configs = {
     settings = {
       haskell = {
         formattingProvider = "stylish-haskell",
+      },
+    },
+  },
+  clangd = {
+    settings = {},
+  },
+  svls = {
+    settings = {
+      svls = {
+        root_dir = util.root_pattern(".svls.toml"),
       },
     },
   },

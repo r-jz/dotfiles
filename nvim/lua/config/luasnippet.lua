@@ -58,11 +58,11 @@ _G.snippet_backword = function()
   return ""
 end
 
-vim.api.nvim_set_keymap("i", "<C-k>", "v:lua.snippet_expand_or_jump()", { expr = true })
-vim.api.nvim_set_keymap("s", "<C-k>", "v:lua.snippet_expand_or_jump()", { expr = true })
-vim.api.nvim_set_keymap("i", "<C-j>", "v:lua.snippet_backword()", { expr = true })
-vim.api.nvim_set_keymap("s", "<C-j>", "v:lua.snippet_backword()", { expr = true })
-vim.api.nvim_set_keymap("i", "<C-l>", "<Plug>luasnip-next-choice", {})
-vim.api.nvim_set_keymap("s", "<C-l>", "<Plug>luasnip-next-choice", {})
+vim.keymap.set("i", "<C-k>", "v:lua.snippet_expand_or_jump()", { expr = true })
+vim.keymap.set("s", "<C-k>", "v:lua.snippet_expand_or_jump()", { expr = true })
+vim.keymap.set("i", "<C-j>", "v:lua.snippet_backword()", { expr = true })
+vim.keymap.set("s", "<C-j>", "v:lua.snippet_backword()", { expr = true })
+vim.keymap.set("i", "<C-l>", "<Plug>luasnip-next-choice", {})
+vim.keymap.set("s", "<C-l>", "<Plug>luasnip-next-choice", {})
 
 loaders.load()
