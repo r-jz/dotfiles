@@ -73,6 +73,13 @@ local function init()
   use({ "p00f/nvim-ts-rainbow", after = "nvim-treesitter" })
   use({ "eddiebergman/nvim-treesitter-pyfold", ft = "python", after = "nvim-treesitter" })
   use({ "windwp/nvim-autopairs", event = "InsertEnter *", config = [[require('config.autopairs')]] })
+  use({
+    "m-demare/hlargs.nvim",
+    config = function()
+      require("hlargs").setup()
+    end,
+    after = "nvim-treesitter",
+  })
 
   -- smart split
   use({ "mrjones2014/smart-splits.nvim", event = "WinEnter", config = [[require('config.smartsplits')]] })
@@ -111,6 +118,7 @@ local function init()
       "L3MON4D3/LuaSnip",
       "onsails/lspkind-nvim",
       "saadparwaiz1/cmp_luasnip",
+      "rcarriga/cmp-dap",
       { "hrsh7th/cmp-buffer", after = "nvim-cmp" },
       { "hrsh7th/cmp-nvim-lsp", after = "nvim-cmp" },
       { "hrsh7th/cmp-cmdline", after = "nvim-cmp" },

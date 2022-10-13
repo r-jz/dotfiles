@@ -33,6 +33,7 @@ local lsp_formatting = function(bufnr)
       return client.name == "null-ls"
     end,
     bufnr = bufnr,
+    timeout_ms = 2000,
   })
 end
 local on_attach = function(client, bufnr)
@@ -59,7 +60,7 @@ local on_attach = function(client, bufnr)
   vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
   vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
   vim.keymap.set("n", "<Leader>lf", function()
-    vim.lsp.buf.format({ sync = true })
+    vim.lsp.buf.format({ timeout_ms = 2000 })
   end, bufopts)
   if client.supports_method("textDocument/formatting") then
     vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
