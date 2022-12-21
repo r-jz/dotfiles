@@ -25,7 +25,12 @@ local function init()
   use({ "shaunsingh/moonlight.nvim" })
 
   -- openbrowser
-  use({ "tyru/open-browser.vim", setup = [[require('config.openbrowser_setup')]] })
+  use({
+    "tyru/open-browser.vim",
+    cmd = { "OpenBrowser", "OpenBrowserSearch" },
+    keys = { "<Plug>(openbrowser-smart-search)" },
+    setup = [[require('config.openbrowser_setup')]],
+  })
 
   -- capture
   use({ "tyru/capture.vim", cmd = { "Capture" } })
@@ -50,6 +55,8 @@ local function init()
     },
     config = [[require('config.lsp')]],
   })
+  -- symbols outline
+  use({ "simrat39/symbols-outline.nvim" })
   -- fidget
   use({ "j-hui/fidget.nvim", config = [[require('config.fidget')]] })
 
@@ -114,26 +121,32 @@ local function init()
   -- completion
   use({
     "hrsh7th/nvim-cmp",
+    module = { "cmp" },
     requires = {
-      "L3MON4D3/LuaSnip",
-      "onsails/lspkind-nvim",
-      "saadparwaiz1/cmp_luasnip",
-      "rcarriga/cmp-dap",
-      { "hrsh7th/cmp-buffer", after = "nvim-cmp" },
-      { "hrsh7th/cmp-nvim-lsp", after = "nvim-cmp" },
-      { "hrsh7th/cmp-cmdline", after = "nvim-cmp" },
-      { "hrsh7th/cmp-path", after = "nvim-cmp" },
-      { "hrsh7th/cmp-nvim-lua", after = "nvim-cmp" },
+      { "onsails/lspkind-nvim", module = { "lspkind" } },
+      { "rcarriga/cmp-dap", event = { "InsertEnter" } },
+      { "hrsh7th/cmp-buffer", event = { "InsertEnter" } },
+      { "hrsh7th/cmp-nvim-lsp", event = { "InsertEnter" } },
+      { "hrsh7th/cmp-cmdline", event = { "InsertEnter" } },
+      { "hrsh7th/cmp-path", event = { "InsertEnter" } },
+      { "hrsh7th/cmp-nvim-lua", event = { "InsertEnter" } },
+      {
+        "saadparwaiz1/cmp_luasnip",
+        event = { "InsertEnter" },
+        requires = { "L3MON4D3/LuaSnip", module = { "luasnip" }, config = [[require('config.luasnippet')]] },
+      },
     },
     config = function()
       require("config.cmp")
-      require("config.luasnippet")
     end,
-    event = "InsertEnter *",
   })
 
   -- indent blankline
-  use({ "lukas-reineke/indent-blankline.nvim", event = "BufRead", config = [[require('config.indent_blankline')]] })
+  use({
+    "lukas-reineke/indent-blankline.nvim",
+    event = "BufRead",
+    config = [[require('config.indent_blankline')]],
+  })
 
   -- toggleterm
   use({
