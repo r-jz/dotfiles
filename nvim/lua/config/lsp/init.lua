@@ -1,11 +1,11 @@
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-local trouble = require("trouble")
+vim.api.nvim_command([[packadd lsp_signature.nvim]])
+vim.api.nvim_command([[packadd cmp-nvim-lsp]])
+
 local lsp_signature = require("lsp_signature")
 local server_configs = require("config.lsp.server_config")
 local lspconfig = require("lspconfig")
-local mason = require("mason")
-local mason_lsp = require("mason-lspconfig")
 
 local opts = { noremap = true, silent = true }
 vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, opts)
@@ -13,24 +13,20 @@ vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 vim.keymap.set("n", "<Leader>q", vim.diagnostic.setloclist, opts)
 
-vim.keymap.set("n", "<Leader>xx", "<cmd>TroubleToggle<CR>", opts)
-vim.keymap.set("n", "<leader>xw", "<cmd>Trouble workspace_diagnostics<cr>", opts)
-vim.keymap.set("n", "<leader>xd", "<cmd>Trouble document_diagnostics<cr>", opts)
-vim.keymap.set("n", "<leader>xl", "<cmd>Trouble loclist<cr>", opts)
-vim.keymap.set("n", "<leader>xq", "<cmd>Trouble quickfix<cr>", opts)
 
--- setup trouble
-trouble.setup({ mode = "document_diagnostics" })
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
---
-local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
 local lsp_formatting = function(bufnr)
   vim.lsp.buf.format({
     filter = function(client)
+      if client.name == "pyright" then
+        return false
+      end
+
+      if client.name == "lua-language-server" then
+        return false
+      end
       -- apply whatever logic you want (in this example, we'll only use null-ls)
-      return client.name == "null-ls"
+      return true
     end,
     bufnr = bufnr,
     timeout_ms = 2000,
@@ -62,87 +58,80 @@ local on_attach = function(client, bufnr)
   vim.keymap.set("n", "<Leader>lf", function()
     vim.lsp.buf.format({ timeout_ms = 2000 })
   end, bufopts)
-  if client.supports_method("textDocument/formatting") then
-    vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-    vim.api.nvim_create_autocmd("BufWritePre", {
-      group = augroup,
-      buffer = bufnr,
-      callback = function()
-        lsp_formatting(bufnr)
-      end,
+  --  if client.supports_method("textDocument/formatting") then
+  --    vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+  --    vim.api.nvim_create_autocmd("BufWritePre", {
+  --      group = augroup,
+  --      buffer = bufnr,
+  --      callback = function()
+  --        lsp_formatting(bufnr)
+  --      end,
+  --    })
+  --  end
+end
+
+return {
+  lsp_config = function()
+    local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+    for type, icon in pairs(signs) do
+      local hl = "DiagnosticSign" .. type
+      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+    end
+
+    vim.diagnostic.config({
+      virtual_text = false,
+      signs = true,
+      underline = true,
+      update_in_insert = false,
+      severity_sort = false,
     })
-  end
-end
+    vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+      border = "rounded",
+    })
 
--- Change diagnosticIcon
-local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
-for type, icon in pairs(signs) do
-  local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-end
+    vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+      border = "rounded",
+    })
 
-vim.diagnostic.config({
-  virtual_text = false,
-  signs = true,
-  underline = true,
-  update_in_insert = false,
-  severity_sort = false,
-})
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+    -- Float diahnostic window when
+    -- rust
+    for server_name, configs in pairs(server_configs) do
+      local settings = configs["settings"]
+      local flags = configs["flags"]
+      if flags == nil then
+        flags = {}
+      end
+      lspconfig[server_name].setup({
+        on_attach = on_attach,
+        flags = flags,
+        capabilities = capabilities,
+        settings = settings,
+      })
+    end
+  end,
 
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-  border = "rounded",
-})
+  -- null-ls
+  null_ls_config = function()
+    local null_ls = require("null-ls")
+    local formatting = null_ls.builtins.formatting
+    local diagnostic = null_ls.builtins.diagnostics
 
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-  border = "rounded",
-})
--- Float diahnostic window when
--- vim.cmd([[autocmd! CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]])
--- Use a loop to conveniently call 'setup' on multiple servers and
--- map buffer local keybindings when the language server attaches
+    local sources = {
+      formatting.autopep8.with({
+        extra_args = { "-aa", "--max-line-length", "110" },
+      }),
+      formatting.isort,
+      formatting.stylua,
+      formatting.cabal_fmt,
+      --diagnostic.pylint,
+    }
 
-mason.setup()
-mason_lsp.setup()
-
-local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
-
-for server_name, configs in pairs(server_configs) do
-  local settings = configs["settings"]
-  local flags = configs["flags"]
-  if flags == nil then
-    flags = {}
-  end
-  lspconfig[server_name].setup({
-    on_attach = on_attach,
-    flags = flags,
-    capabilities = capabilities,
-    settings = settings,
-  })
-end
--- rust
-require("rust-tools").setup({
-  server = {
-    on_attach = on_attach,
-  },
-})
-
--- null-ls
-local null_ls = require("null-ls")
-local formatting = null_ls.builtins.formatting
-local diagnostic = null_ls.builtins.diagnostics
-
-local sources = {
-  formatting.autopep8.with({
-    extra_args = { "-a", "--max-line-length", "110" },
-  }),
-  formatting.isort,
-  formatting.stylua,
-  formatting.cabal_fmt,
-  --diagnostic.pylint,
+    null_ls.setup({
+      debug = true,
+      sources = sources,
+      on_attach = on_attach,
+    })
+  end,
 }
-
-null_ls.setup({
-  debug = true,
-  sources = sources,
-  on_attach = on_attach,
-})

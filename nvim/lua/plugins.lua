@@ -9,7 +9,6 @@ local function init()
       },
     })
   end
-
   local use = packer.use
   packer.reset()
 
@@ -17,12 +16,11 @@ local function init()
   use({ "wbthomason/packer.nvim", opt = true })
 
   use({ "lewis6991/impatient.nvim" })
-  use({ "nathom/filetype.nvim" })
 
   -- colorsheme
-  use({ "haishanh/night-owl.vim" })
+  -- use({ "haishanh/night-owl.vim" })
   use({ "folke/tokyonight.nvim" })
-  use({ "shaunsingh/moonlight.nvim" })
+  -- use({ "shaunsingh/moonlight.nvim" })
 
   -- openbrowser
   use({
@@ -31,7 +29,6 @@ local function init()
     keys = { "<Plug>(openbrowser-smart-search)" },
     setup = [[require('config.openbrowser_setup')]],
   })
-
   -- capture
   use({ "tyru/capture.vim", cmd = { "Capture" } })
 
@@ -39,26 +36,53 @@ local function init()
   use({ "machakann/vim-sandwich", event = "InsertEnter *" })
 
   -- trouble
-  use({ "folke/trouble.nvim", requires = { "kyazdani42/nvim-web-devicons" } })
+  use({ "folke/trouble.nvim",
+        cmd = { "Trouble", "TroubleToggle", "TroubleRefresh" },
+        opt = true,
+        requires = { "kyazdani42/nvim-web-devicons" },
+        setup = function ()
+        local opts = { noremap = true, silent = true }
+        vim.keymap.set("n", "<Leader>xx", "<cmd>TroubleToggle<CR>", opts)
+        vim.keymap.set("n", "<leader>xw", "<cmd>Trouble workspace_diagnostics<cr>", opts)
+        vim.keymap.set("n", "<leader>xd", "<cmd>Trouble document_diagnostics<cr>", opts)
+        vim.keymap.set("n", "<leader>xl", "<cmd>Trouble loclist<cr>", opts)
+        vim.keymap.set("n", "<leader>xq", "<cmd>Trouble quickfix<cr>", opts)
+        end,
+        config = function ()
+    require("trouble").setup({ mode = "document_diagnostics" })
+  end })
 
   -- lsp config
   use({
     "neovim/nvim-lspconfig",
-    --event = { "InsertEnter *" },
-    requires = {
-      "ray-x/lsp_signature.nvim",
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-      "hrsh7th/cmp-nvim-lsp",
-      "folke/trouble.nvim",
-      "simrat39/rust-tools.nvim",
-    },
-    config = [[require('config.lsp')]],
+    event = { "BufReadPre" },
+    config = function()
+      local lsp = require('config.lsp')
+      lsp.lsp_config()
+    end
   })
-  -- symbols outline
-  use({ "simrat39/symbols-outline.nvim" })
+  use({"williamboman/mason.nvim", opt = false, requires = "williamboman/mason-lspconfig.nvim", config = function ()
+    require("mason").setup()
+    require("mason-lspconfig").setup()
+  end})
+  use({"ray-x/lsp_signature.nvim", opt = true, after = "nvim-lspconfig"})
+
+  -- rust
+  use({"simrat39/rust-tools.nvim", ft = "rust", config = function ()
+       local rt = require("rust-tools")
+       rt.setup({
+       server = {
+       on_attach = function(_, bufnr)
+       -- Hover actions
+       vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
+       -- Code action groups
+       vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+       end},
+     })
+  end})
+
   -- fidget
-  use({ "j-hui/fidget.nvim", config = [[require('config.fidget')]] })
+  use({ "j-hui/fidget.nvim", opt = true, event = "BufReadPost", config = [[require('config.fidget')]] })
 
   -- quickfix
   use({
@@ -66,18 +90,14 @@ local function init()
     { "gabrielpoca/replacer.nvim", ft = "qf" },
   })
 
-  -- iron repl
-  use({ "hkupty/iron.nvim", config = [[require('config.iron')]], cmd = "IronRepl" })
 
   -- treesitter
   use({
     "nvim-treesitter/nvim-treesitter",
-    run = ":TSUpdate",
-    event = { "BufRead", "BufNewFile" },
-    cmd = { "TSInstall", "TSInstallInfo", "TSInstallSync", "TSUpdate", "TSUpdateSync", "TSDisableAll", "TSEnableAll" },
+    event = { "BufReadPost" },
     config = [[require('config.treesitter')]],
   })
-  use({ "p00f/nvim-ts-rainbow", after = "nvim-treesitter" })
+  use({ "p00f/nvim-ts-rainbow", opt = true, after = "nvim-treesitter" })
   use({ "eddiebergman/nvim-treesitter-pyfold", ft = "python", after = "nvim-treesitter" })
   use({ "windwp/nvim-autopairs", event = "InsertEnter *", config = [[require('config.autopairs')]] })
   use({
@@ -90,17 +110,6 @@ local function init()
 
   -- smart split
   use({ "mrjones2014/smart-splits.nvim", event = "WinEnter", config = [[require('config.smartsplits')]] })
-
-  -- neogit
-  use({
-    "TimUntersberger/neogit",
-    cmd = "Neogit",
-    requires = {
-      "nvim-lua/plenary.nvim",
-      "sindrets/diffview.nvim",
-    },
-    config = [[require('config.neogit')]],
-  })
 
   -- git-conflict
   use({
@@ -121,30 +130,34 @@ local function init()
   -- completion
   use({
     "hrsh7th/nvim-cmp",
-    module = { "cmp" },
+    event = "InsertEnter",
     requires = {
+      {"lukas-reineke/cmp-under-comparator"},
       { "onsails/lspkind-nvim", module = { "lspkind" } },
-      { "rcarriga/cmp-dap", event = { "InsertEnter" } },
-      { "hrsh7th/cmp-buffer", event = { "InsertEnter" } },
-      { "hrsh7th/cmp-nvim-lsp", event = { "InsertEnter" } },
-      { "hrsh7th/cmp-cmdline", event = { "InsertEnter" } },
-      { "hrsh7th/cmp-path", event = { "InsertEnter" } },
-      { "hrsh7th/cmp-nvim-lua", event = { "InsertEnter" } },
-      {
-        "saadparwaiz1/cmp_luasnip",
-        event = { "InsertEnter" },
-        requires = { "L3MON4D3/LuaSnip", module = { "luasnip" }, config = [[require('config.luasnippet')]] },
-      },
+      { "rcarriga/cmp-dap", after = "cmp-buffer" },
+      { "hrsh7th/cmp-buffer", after = "cmp-path" } ,
+      { "hrsh7th/cmp-nvim-lsp", after = "cmp_luasnip" },
+      { "hrsh7th/cmp-cmdline", after = "cmp-dap" },
+      { "hrsh7th/cmp-path", after = "cmp-nvim-lua" },
+      { "hrsh7th/cmp-nvim-lua", after = "cmp-nvim-lsp" },
+      { "saadparwaiz1/cmp_luasnip", after = "LuaSnip"}
     },
     config = function()
       require("config.cmp")
     end,
   })
 
+  use({ "L3MON4D3/LuaSnip",
+        after = "nvim-cmp",
+        config = function ()
+          require('config.luasnippet').config()
+        end
+      })
+
   -- indent blankline
   use({
     "lukas-reineke/indent-blankline.nvim",
-    event = "BufRead",
+    event = "BufReadPost",
     config = [[require('config.indent_blankline')]],
   })
 
@@ -195,14 +208,21 @@ local function init()
   -- nvim-tree
   use({
     "kyazdani42/nvim-tree.lua",
-    requires = { "kyazdani42/nvim-web-devicons" },
+    opt = true,
+    requires = { "kyazdani42/nvim-web-devicons" , opt = true},
+    cmd = {
+		"NvimTreeToggle",
+		"NvimTreeOpen",
+		"NvimTreeFindFile",
+		"NvimTreeFindFileToggle",
+		"NvimTreeRefresh",
+	  },
     setup = [[require('config.nvim_tree_setup')]],
     config = [[require('config.nvim_tree')]],
-    -- cmd = { "NvimTreeToggle" },
   })
 
   -- null ls
-  use({ "jose-elias-alvarez/null-ls.nvim", requires = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" } })
+  --use({ "jose-elias-alvarez/null-ls.nvim", requires = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" } })
   -- notify
   use({
     "rcarriga/nvim-notify",

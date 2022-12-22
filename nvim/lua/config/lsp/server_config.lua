@@ -20,7 +20,7 @@ local server_configs = {
         analysis = {
           typeCheckingMode = "basic",
           stubPath = os.getenv("HOME") .. "/typings",
-          useLibraryCodeForTypes = false,
+          useLibraryCodeForTypes = true,
           diagnosticMode = "openFilesOnly",
         },
       },
@@ -29,11 +29,17 @@ local server_configs = {
   hls = {
     settings = {
       haskell = {
-        formattingProvider = "stylish-haskell",
+        formattingProvider = "ormolu",
       },
     },
   },
   clangd = {
+    settings = {},
+  },
+  tsserver = {
+    settings = {},
+  },
+  cmake = {
     settings = {},
   },
   svls = {

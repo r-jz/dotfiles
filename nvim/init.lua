@@ -5,7 +5,6 @@ local set_keymap = api.nvim_set_keymap
 local o, wo, bo = vim.o, vim.wo, vim.bo
 
 vim.g.mapleader = " "
-vim.g.did_load_filetypes = 1
 vim.g.loaded_python_provider = 0
 vim.g.loaded_python3_provider = 0
 

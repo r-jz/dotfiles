@@ -1,6 +1,6 @@
 local cmp = require("cmp")
-local luasnip = require("luasnip")
 local lspkind = require("lspkind")
+print("Hello from cmp")
 
 local has_words_before = function()
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
@@ -14,7 +14,7 @@ cmp.setup({
   preselect = cmp.PreselectMode.None,
   snippet = {
     expand = function(args)
-      luasnip.lsp_expand(args.body)
+      require("luasnip").lsp_expand(args.body)
     end,
   },
   mapping = cmp.mapping.preset.insert({
@@ -39,22 +39,15 @@ cmp.setup({
       end
     end,
     ["<C-k>"] = function(fallback)
-      if luasnip.expand_or_locally_jumpable() then
-        luasnip.expand_or_jump()
+      if require("luasnip").expand_or_locally_jumpable() then
+        require("luasnip").expand_or_jump()
       else
         fallback()
       end
     end,
     ["<C-j>"] = function(fallback)
-      if luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end,
-    ["<C-l>"] = function(fallback)
-      if luasnip.choice_active() then
-        luasnip.change_choice()
+      if require("luasnip").jumpable(-1) then
+        require("luasnip").jump(-1)
       else
         fallback()
       end
