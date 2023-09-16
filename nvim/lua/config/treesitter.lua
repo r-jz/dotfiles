@@ -9,6 +9,9 @@ ts_configs.setup({
 
   -- List of parsers to ignore installing
   ignore_install = {},
+  context_commentstring = {
+    enable = true,
+  },
 
   highlight = {
     -- `false` will disable the whole extension
@@ -43,6 +46,10 @@ ts_configs.setup({
   autopairs = {
     enable = true,
   },
+
+  autotag = {
+    enable = true
+  }
 })
 
 vim.opt.foldmethod = "expr"

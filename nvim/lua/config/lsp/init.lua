@@ -3,72 +3,44 @@
 vim.api.nvim_command([[packadd lsp_signature.nvim]])
 vim.api.nvim_command([[packadd cmp-nvim-lsp]])
 
-local lsp_signature = require("lsp_signature")
 local server_configs = require("config.lsp.server_config")
 local lspconfig = require("lspconfig")
 
-local opts = { noremap = true, silent = true }
-vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, opts)
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-vim.keymap.set("n", "<Leader>q", vim.diagnostic.setloclist, opts)
+vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
+vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist)
+-- Use LspAttach autocommand to only map the following keys
+-- after the language server attaches to the current buffer
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+  callback = function(ev)
+    -- Enable completion triggered by <c-x><c-o>
+    vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
 
-
-
-local lsp_formatting = function(bufnr)
-  vim.lsp.buf.format({
-    filter = function(client)
-      if client.name == "pyright" then
-        return false
-      end
-
-      if client.name == "lua-language-server" then
-        return false
-      end
-      -- apply whatever logic you want (in this example, we'll only use null-ls)
-      return true
-    end,
-    bufnr = bufnr,
-    timeout_ms = 2000,
-  })
-end
-local on_attach = function(client, bufnr)
-  -- Enable completion triggered by <c-x><c-o>
-  vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-  lsp_signature.on_attach()
-
-  -- Mappings.
-  -- See `:help vim.lsp.*` for documentation on any of the below functions
-  local bufopts = { noremap = true, silent = true, buffer = bufnr }
-
-  vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
-  vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
-  vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
-  vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
-  vim.keymap.set("n", "<Leader>wa", vim.lsp.buf.add_workspace_folder, bufopts)
-  vim.keymap.set("n", "<Leader>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
-  vim.keymap.set("n", "<Leader>wl", function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, bufopts)
-  vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
-  vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
-  vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
-  vim.keymap.set("n", "<Leader>lf", function()
-    vim.lsp.buf.format({ timeout_ms = 2000 })
-  end, bufopts)
-  --  if client.supports_method("textDocument/formatting") then
-  --    vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-  --    vim.api.nvim_create_autocmd("BufWritePre", {
-  --      group = augroup,
-  --      buffer = bufnr,
-  --      callback = function()
-  --        lsp_formatting(bufnr)
-  --      end,
-  --    })
-  --  end
-end
+    require("lsp_signature").on_attach()
+    -- Buffer local mappings.
+    -- See `:help vim.lsp.*` for documentation on any of the below functions
+    local opts = { buffer = ev.buf }
+    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+    vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+    vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, opts)
+    vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, opts)
+    vim.keymap.set("n", "<space>wl", function()
+      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, opts)
+    vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, opts)
+    vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, opts)
+    vim.keymap.set({ "n", "v" }, "<space>ca", vim.lsp.buf.code_action, opts)
+    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+    vim.keymap.set("n", "<space>f", function()
+      vim.lsp.buf.format({ async = true })
+    end, opts)
+  end,
+})
 
 return {
   lsp_config = function()
@@ -104,14 +76,12 @@ return {
         flags = {}
       end
       lspconfig[server_name].setup({
-        on_attach = on_attach,
         flags = flags,
         capabilities = capabilities,
         settings = settings,
       })
     end
   end,
-
   -- null-ls
   null_ls_config = function()
     local null_ls = require("null-ls")
@@ -123,15 +93,13 @@ return {
         extra_args = { "-aa", "--max-line-length", "110" },
       }),
       formatting.isort,
-      formatting.stylua,
       formatting.cabal_fmt,
+      formatting.stylua,
       --diagnostic.pylint,
     }
-
     null_ls.setup({
       debug = true,
       sources = sources,
-      on_attach = on_attach,
     })
   end,
 }

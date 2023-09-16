@@ -1,0 +1,26 @@
+{
+    "workspace.library": [
+        "/home/ryoj/.config/nvim",
+        "/etc/xdg/nvim",
+        "/home/ryoj/.local/share/nvim/site",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/start/cmp-under-comparator",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/start/impatient.nvim",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/start/lualine.nvim",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/start/mason-lspconfig.nvim",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/start/mason.nvim",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/start/nvim-notify",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/start/plenary.nvim",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/start/telescope-fzf-native.nvim",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/start/tokyonight.nvim",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/opt/cmp-nvim-lsp",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/opt/lsp_signature.nvim",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/opt/nvim-lspconfig",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/opt/packer.nvim",
+        "/usr/share/nvim/runtime",
+        "/usr/share/nvim/runtime/pack/dist/opt/matchit",
+        "/usr/lib/nvim",
+        "/home/ryoj/.local/share/nvim/site/pack/packer/opt/cmp-nvim-lsp/after",
+        "/usr/share/vim/vimfiles",
+        "${3rd}/luassert/library"
+    ]
+}

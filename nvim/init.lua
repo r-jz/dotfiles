@@ -43,8 +43,8 @@ o.showmatch = true
 
 -- color scheme
 o.termguicolors = true
-o.background = "dark"
 cmd("colorscheme tokyonight")
+o.background = "dark"
 
 -- clipboard
 vim.opt.clipboard:append({ "unnamedplus" })
