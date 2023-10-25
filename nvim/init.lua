@@ -1,12 +1,16 @@
-require("impatient")
 local api = vim.api
 local cmd = vim.cmd
 local set_keymap = api.nvim_set_keymap
 local o, wo, bo = vim.o, vim.wo, vim.bo
 
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.loader.enable()
 vim.g.mapleader = " "
 vim.g.loaded_python_provider = 0
 vim.g.loaded_python3_provider = 0
+require('lazyvim')
+
 
 --o.title = true
 o.updatetime = 250
@@ -43,7 +47,6 @@ o.showmatch = true
 
 -- color scheme
 o.termguicolors = true
-cmd("colorscheme tokyonight")
 o.background = "dark"
 
 -- clipboard
@@ -66,12 +69,5 @@ set_keymap("n", "<C-Down>", "<cmd>bnext<CR>", { noremap = true, silent = false }
 set_keymap("n", "<C-Up>", "<cmd>bNext<CR>", { noremap = true, silent = false })
 
 cmd("syntax on")
-
--- Commands
-cmd([[command! PackerInstall packadd packer.nvim | lua require('plugins').install()]])
-cmd([[command! PackerUpdate packadd packer.nvim | lua require('plugins').update()]])
-cmd([[command! PackerSync packadd packer.nvim | lua require('plugins').sync()]])
-cmd([[command! PackerClean packadd packer.nvim | lua require('plugins').clean()]])
-cmd([[command! PackerCompile packadd packer.nvim | lua require('plugins').compile()]])
-
 cmd("filetype plugin indent on")
+

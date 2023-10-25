@@ -1,52 +1,49 @@
-local packer = nil
-local function init()
-  if packer == nil then
-    packer = require("packer")
-    packer.init({
-      disable_commands = true,
-      display = {
-        open_fn = require("packer.util").float,
-      },
-    })
-  end
-  local use = packer.use
-  packer.reset()
-
-  -- packer
-  use({ "wbthomason/packer.nvim", opt = true })
-
-  use({ "lewis6991/impatient.nvim" })
-
+return {
   -- colorsheme
   -- use({ "haishanh/night-owl.vim" })
-  use({ "folke/tokyonight.nvim" })
+  {
+    "folke/tokyonight.nvim",
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    priority = 1000, -- make sure to load this before all the other start plugins
+    config = function()
+      -- load the colorscheme here
+      vim.cmd([[colorscheme tokyonight]])
+    end,
+  },
   -- use({ "shaunsingh/moonlight.nvim" })
 
   -- openbrowser
-  use({
+  {
     "tyru/open-browser.vim",
     cmd = { "OpenBrowser", "OpenBrowserSearch" },
     keys = { "<Plug>(openbrowser-smart-search)" },
-    setup = function()
+    init = function()
       vim.g.netrw_nogx = 1
       local silent = { silent = true }
       vim.api.nvim_set_keymap("n", "gx", "<Plug>(openbrowser-smart-search)", silent)
       vim.api.nvim_set_keymap("v", "gx", "<Plug>(openbrowser-smart-search)", silent)
     end,
-  })
+  },
+
   -- capture
-  use({ "tyru/capture.vim", cmd = { "Capture" } })
+  {
+    "tyru/capture.vim",
+    cmd = "Capture",
+  },
 
   -- sandwich
-  use({ "machakann/vim-sandwich", event = "InsertEnter *" })
+  {
+    "machakann/vim-sandwich",
+    event = "InsertEnter",
+  },
 
   -- trouble
-  use({
+  {
     "folke/trouble.nvim",
     cmd = { "Trouble", "TroubleToggle", "TroubleRefresh" },
     opt = true,
-    requires = { "nvim-tree/nvim-web-devicons" },
-    setup = function()
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    init = function()
       local opts = { noremap = true, silent = true }
       vim.keymap.set("n", "<Leader>xx", "<cmd>TroubleToggle<CR>", opts)
       vim.keymap.set("n", "<leader>xw", "<cmd>Trouble workspace_diagnostics<cr>", opts)
@@ -57,30 +54,41 @@ local function init()
     config = function()
       require("trouble").setup({ mode = "document_diagnostics" })
     end,
-  })
+  },
 
   -- lsp config
-  use({
+  {
     "neovim/nvim-lspconfig",
-    event = { "BufReadPre" },
+    dependencies = { "ray-x/lsp_signature.nvim" },
+    event = { "BufReadPre", "BufNewFile" },
     config = function()
       local lsp = require("config.lsp")
       lsp.lsp_config()
     end,
-  })
-  use({
+  },
+
+  {
     "williamboman/mason.nvim",
-    opt = false,
-    requires = "williamboman/mason-lspconfig.nvim",
+    lazy = false,
+    dependencies = { "williamboman/mason-lspconfig.nvim" },
     config = function()
       require("mason").setup()
       require("mason-lspconfig").setup()
     end,
-  })
-  use({ "ray-x/lsp_signature.nvim", opt = true, after = "nvim-lspconfig" })
+  },
+
+  -- which-key
+  {
+    'folke/which-key.nvim',
+    lazy = true,
+    cmd = {
+        "WhichKey",
+    },
+    opts = {},
+  },
 
   -- rust
-  use({
+  {
     "simrat39/rust-tools.nvim",
     ft = "rust",
     config = function()
@@ -97,139 +105,223 @@ local function init()
         },
       })
     end,
-  })
+  },
   -- haskell
-  use({
-    "mrcjkb/haskell-tools.nvim",
-    requires = {
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope.nvim", -- optional
-    },
-  })
+  {
+  'mrcjkb/haskell-tools.nvim',
+  dependencies = {
+    'nvim-lua/plenary.nvim',
+  },
+  init = function ()
+      vim.g.haskell_tools = {
+        tools = {
+          repl = {
+            handler = "toggleterm",
+          }
+        }
+      }
+  end,
+  version = '^2', -- Recommended
+  ft = { 'haskell', 'lhaskell', 'cabal', 'cabalproject' },
+  },
 
   -- fidget
-  use({ "j-hui/fidget.nvim", opt = true, event = "BufReadPost", config = [[require('config.fidget')]] })
+  {
+    "j-hui/fidget.nvim",
+    tag = "legacy",
+    event = "LspAttach",
+    config = function()
+      require("config.fidget")
+    end,
+  },
+  -- aerial
+  {
+    'stevearc/aerial.nvim',
+    opts = {},
+    cmd = "AerialToggle",
+    keys = {"<leader>a"},
+    init = function ()
+      vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>")
+    end,
+    -- Optional dependencies
+    dependencies = {
+       "nvim-treesitter/nvim-treesitter",
+       "nvim-tree/nvim-web-devicons"
+    },
+  },
 
   -- quickfix
-  use({
-    { "kevinhwang91/nvim-bqf",     ft = "qf" },
-    { "gabrielpoca/replacer.nvim", ft = "qf" },
-  })
+  { "kevinhwang91/nvim-bqf", ft = "qf" },
+
+  { "gabrielpoca/replacer.nvim", ft = "qf" },
 
   -- treesitter
-  use({
+  {
     "nvim-treesitter/nvim-treesitter",
     event = { "BufReadPost" },
-    config = [[require('config.treesitter')]],
-  })
-  --use({ "HiPhish/nvim-ts-rainbow2", opt = true, after = "nvim-treesitter" })
-  --use({ "eddiebergman/nvim-treesitter-pyfold", ft = "python", after = "nvim-treesitter" })
-  use({ "windwp/nvim-autopairs", event = "InsertEnter *", config = [[require('config.autopairs')]] })
-  use({ "windwp/nvim-ts-autotag", opt = true, after = "nvim-treesitter" })
-  use({ "JoosepAlviste/nvim-ts-context-commentstring", opt = true, after = "nvim-treesitter" })
-  use({
+    config = function()
+      require("config.treesitter")
+    end,
+  },
+
+  {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    opts = {
+      check_ts = true,
+      ts_config = {
+        lua = { "stirng", "source" },
+      },
+    },
+  },
+
+  {
+    "windwp/nvim-ts-autotag",
+    lazy = true,
+  },
+
+  {
     "m-demare/hlargs.nvim",
     config = function()
       require("hlargs").setup()
     end,
-    after = "nvim-treesitter",
-  })
+    dependencies = { "nvim-treesitter" },
+  },
 
-  -- ansible
-  --use({ "mfussenegger/nvim-ansible" })
-  use({ "pearofducks/ansible-vim" })
   -- colorizer
-  use({
+  {
     "norcalli/nvim-colorizer.lua",
     config = function()
       require("colorizer").setup()
     end,
-  })
+  },
+
   -- Comment
-  use({
+  {
     "numToStr/Comment.nvim",
     event = { "InsertEnter" },
     config = function()
       require("Comment").setup()
     end,
-  })
+  },
 
   -- smart split
-  use({ "mrjones2014/smart-splits.nvim", event = "WinEnter", config = [[require('config.smartsplits')]] })
+  {
+    "mrjones2014/smart-splits.nvim",
+    event = "WinEnter",
+    config = function()
+      require("config.smartsplits")
+    end,
+  },
 
   -- git-conflict
-  use({
+  {
     "akinsho/git-conflict.nvim",
     config = function()
       require("git-conflict").setup({})
     end,
     event = "BufWinEnter",
-  })
+  },
 
   -- statusline
-  use({
+  {
     "nvim-lualine/lualine.nvim",
-    requires = { "nvim-tree/nvim-web-devicons", opt = true },
-    config = [[require('config.lualine')]],
-  })
+    lazy = false,
+    requires = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("config.lualine")
+    end,
+  },
 
   -- completion
-  use({
+  {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
-    requires = {
+    dependencies = {
       { "lukas-reineke/cmp-under-comparator" },
-      { "onsails/lspkind-nvim",              module = { "lspkind" } },
-      { "rcarriga/cmp-dap",                  after = "cmp-buffer" },
-      { "hrsh7th/cmp-buffer",                after = "cmp-path" },
-      { "hrsh7th/cmp-nvim-lsp",              after = "cmp_luasnip" },
-      { "hrsh7th/cmp-cmdline",               after = "cmp-dap" },
-      { "hrsh7th/cmp-path",                  after = "cmp-nvim-lua" },
-      { "hrsh7th/cmp-nvim-lua",              after = "cmp-nvim-lsp" },
-      { "saadparwaiz1/cmp_luasnip",          after = "LuaSnip" },
+      { "onsails/lspkind-nvim" },
+      { "rcarriga/cmp-dap" },
+      { "hrsh7th/cmp-buffer" },
+      { "hrsh7th/cmp-nvim-lsp" },
+      { "hrsh7th/cmp-cmdline" },
+      { "hrsh7th/cmp-path" },
+      { "hrsh7th/cmp-nvim-lua" },
+      { "saadparwaiz1/cmp_luasnip" },
+      {
+        "L3MON4D3/LuaSnip",
+        config = function()
+          require("config.luasnippet").config()
+        end,
+      },
     },
     config = function()
       require("config.cmp")
     end,
-  })
-
-  use({
-    "L3MON4D3/LuaSnip",
-    after = "nvim-cmp",
-    config = function()
-      require("config.luasnippet").config()
-    end,
-  })
+  },
 
   -- indent blankline
-  use({
+  {
     "lukas-reineke/indent-blankline.nvim",
     event = "BufReadPost",
-    config = [[require('config.indent_blankline')]],
-  })
+    config = function()
+      require("config.indent_blankline")
+    end,
+  },
 
   -- toggleterm
-  use({
+  {
     "akinsho/toggleterm.nvim",
+    -- lazy = true,
     cmd = "ToggleTerm",
-    config = function()
-      local t_config = require("config.toggleterm")
-      t_config.config()
-    end,
-    setup = function()
+    keys = {"<C-\\>"},
+    opts = {
+      size = function(term)
+        if term.direction == "horizontal" then
+          return 15
+        elseif term.direction == "vertical" then
+          return vim.o.columns * 0.4
+        end
+      end,
+      open_mapping = [[<C-\>]],
+      hide_numbers = true, -- hide the number column in toggleterm buffers
+      shade_filetypes = {},
+      shade_terminals = true,
+      shading_factor = 2, -- the degree by which to darken to terminal colour, default: 1 for dark backgrounds, 3 for light
+      --start_in_insert = true,
+      insert_mappings = true, -- whether or not the open mapping applies in insert mode
+      terminal_mappings = true, -- whether or not the open mapping applies in the opened terminals
+      persist_size = false,
+      direction = "horizontal",
+      close_on_exit = true, -- close the terminal window when the process exits
+      -- This field is only relevant if direction is set to 'float'
+      float_opts = {
+        -- The border key is *almost* the same as 'nvim_open_win'
+        -- see :h nvim_open_win for details on borders however
+        -- the 'curved' border is a custom border type
+        -- not natively supported but implemented in this plugin.
+        border = "curved",
+        --| 'double' | 'shadow' | 'curved' | ... other options supported by win open
+        winblen = 3,
+        highlights = {
+          border = "Normal",
+          background = "Normal",
+        },
+      },
+    },
+    init = function()
       local t_config = require("config.toggleterm")
       t_config.setup()
     end,
-  })
+  },
 
   -- telescope
-  use({
+  {
     "nvim-telescope/telescope.nvim",
-    requires = {
+    dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-telescope/telescope-fzf-native.nvim",
     },
-    setup = function()
+    init = function()
       local telescope = require("config.telescope")
       telescope.setup()
     end,
@@ -238,56 +330,58 @@ local function init()
       telescope.config()
     end,
     cmd = { "Telescope" },
-    module = { "telescope" },
-  }, { "nvim-telescope/telescope-fzf-native.nvim", run = "make", opt = true, after = "telescope.nvim" })
+  },
+  {
+    "nvim-telescope/telescope-fzf-native.nvim",
+    build = "make",
+    dependencies = "telescope.nvim",
+  },
 
   -- nvim-dap
-  use({
-    {
+  {
+    "mfussenegger/nvim-dap",
+    init = function()
+      local dap = require("config.dap")
+      dap.dap.setup()
+    end,
+    config = function()
+      local dap = require("config.dap")
+      dap.dap.config()
+    end,
+  },
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = {
       "mfussenegger/nvim-dap",
-      setup = function()
-        local dap = require("config.dap")
-        dap.dap.setup()
-      end,
-      config = function()
-        local dap = require("config.dap")
-        dap.dap.config()
-      end,
-      module = { "dap" },
+      "nvim-dap",
     },
-    {
-      "rcarriga/nvim-dap-ui",
-      requires = { "mfussenegger/nvim-dap" },
-      after = { "nvim-dap" },
-      config = function()
-        local dap = require("config.dap")
-        dap.ui.config()
-      end,
-    },
-    {
-      "mfussenegger/nvim-dap-python",
-      requires = { "mfussenegger/nvim-dap" },
-      after = { "nvim-dap" },
-      config = function()
-        local dap = require("config.dap")
-        dap.dappy.config()
-      end,
-      ft = "python",
-    },
-  })
+    config = function()
+      local dap = require("config.dap")
+      dap.ui.config()
+    end,
+  },
+  {
+    "mfussenegger/nvim-dap-python",
+    dependencies = { "nvim-dap" },
+    config = function()
+      local dap = require("config.dap")
+      dap.dappy.config()
+    end,
+    ft = "python",
+  },
+
   -- symbols outline
-  use({
+  {
     "simrat39/symbols-outline.nvim",
     config = function()
       require("symbols-outline").setup()
     end,
-  })
+  },
 
   -- nvim-tree
-  use({
+  {
     "nvim-tree/nvim-tree.lua",
-    opt = true,
-    requires = { "nvim-tree/nvim-web-devicons", opt = true },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     cmd = {
       "NvimTreeToggle",
       "NvimTreeOpen",
@@ -295,39 +389,63 @@ local function init()
       "NvimTreeFindFileToggle",
       "NvimTreeRefresh",
     },
-    setup = function()
+    init = function()
       local silent = { silent = true }
       vim.keymap.set("n", "<C-n>", [[<cmd>NvimTreeToggle<cr>]], silent)
       vim.keymap.set("n", "<Leader>nr", [[<cmd>NvimTreeRefresh<cr>]], silent)
       vim.keymap.set("n", "<Leader>nf", [[<cmd>NvimTreeFindFile<cr>]], silent)
     end,
-    config = [[require('config.nvim_tree')]],
-  })
+    opts = {
+      hijack_unnamed_buffer_when_opening = true,
+      disable_netrw = true
+    },
+  },
 
-  -- null-ls
-  use({
-    "jose-elias-alvarez/null-ls.nvim",
-    requires = { "nvim-lua/plenary.nvim" },
-    event = { "FocusLost", "CursorHold" },
-    config = function()
-      local lsp = require("config.lsp")
-      lsp.null_ls_config()
+  -- conform
+  {
+    "stevearc/conform.nvim",
+    event = { "BufWritePre" },
+    cmd = { "ConformInfo" },
+    keys = {
+      {
+        -- Customize or remove this keymap to your liking
+        "<leader>f",
+        function()
+          require("conform").format({ async = true, lsp_fallback = true })
+        end,
+        mode = "",
+        desc = "Format buffer",
+      },
+    },
+    -- Everything in opts will be passed to setup()
+    opts = {
+      -- Define your formatters
+      formatters_by_ft = {
+        lua = { "stylua" },
+        python = { "autopep8", "isort" },
+        javascript = { { "prettierd", "prettier" } },
+      },
+      -- Set up format-on-save
+      -- format_on_save = { timeout_ms = 500, lsp_fallback = true },
+      -- Customize formatters
+      formatters = {
+        shfmt = {
+          prepend_args = { "-i", "2" },
+        },
+      },
+    },
+    init = function()
+      -- If you want the formatexpr, here is the place to set it
+      vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
     end,
-  })
+  },
+
   -- notify
-  use({
+  {
     "rcarriga/nvim-notify",
+    lazy = false,
     config = function()
       vim.notify = require("notify")
     end,
-  })
-end
-
-local plugins = setmetatable({}, {
-  __index = function(_, key)
-    init()
-    return packer[key]
-  end,
-})
-
-return plugins
+  },
+}

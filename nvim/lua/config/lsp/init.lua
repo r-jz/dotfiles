@@ -1,7 +1,5 @@
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-vim.api.nvim_command([[packadd lsp_signature.nvim]])
-vim.api.nvim_command([[packadd cmp-nvim-lsp]])
 
 local server_configs = require("config.lsp.server_config")
 local lspconfig = require("lspconfig")
@@ -26,7 +24,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
     vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
     vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-    vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+    vim.keymap.set("n", "<C-i>", vim.lsp.buf.signature_help, opts)
     vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, opts)
     vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, opts)
     vim.keymap.set("n", "<space>wl", function()
@@ -36,9 +34,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, opts)
     vim.keymap.set({ "n", "v" }, "<space>ca", vim.lsp.buf.code_action, opts)
     vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-    vim.keymap.set("n", "<space>f", function()
-      vim.lsp.buf.format({ async = true })
-    end, opts)
+    -- vim.keymap.set("n", "<space>f", function()
+    --   vim.lsp.buf.format({ async = true })
+    -- end, opts)
   end,
 })
 
@@ -81,25 +79,5 @@ return {
         settings = settings,
       })
     end
-  end,
-  -- null-ls
-  null_ls_config = function()
-    local null_ls = require("null-ls")
-    local formatting = null_ls.builtins.formatting
-    local diagnostic = null_ls.builtins.diagnostics
-
-    local sources = {
-      formatting.autopep8.with({
-        extra_args = { "-aa", "--max-line-length", "110" },
-      }),
-      formatting.isort,
-      formatting.cabal_fmt,
-      formatting.stylua,
-      --diagnostic.pylint,
-    }
-    null_ls.setup({
-      debug = true,
-      sources = sources,
-    })
   end,
 }
