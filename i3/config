@@ -13,51 +13,65 @@ set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:Sans 12
-
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
 #font pango:DejaVu Sans Mono 8
-
+font pango:DejaVu Sans Mono 12
+# This is for fcitx
+exec --no-startup-id fcitx5
+exec --no-startup-id /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
 # The combination of xss-lock, nm-applet and pactl is a popular choice, so
 # they are included here as an example. Modify as you see fit.
 
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork -e
+
+# exclude
+exec_always --no-startup-id picom --experimental-backends -b
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
-# exec --no-startup-id nm-applet
+exec --no-startup-id nm-applet
+
+# set bg
+exec --no-startup-id "feh --bg-scale $HOME/.config/i3/screenshot.jpg"
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+# Use light to adjust brightness of backlight
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set 5%+
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec ~/.bin/run_urxvt
+# bindsym $mod+Return exec alacritty
+bindsym $mod+Return exec alacritty
+
+# start terminal at same directory on floating window
+bindsym $mod+Shift+Return exec alacritty --class floatterm --working-directory "$(xcwd)" --config-file $HOME/.config/alacritty/alacritty-float.toml
 
 # kill focused window
 bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
-# bindsym $mod+d exec dmenu_run
-# There also is the (new) i3-dmenu-desktop which only displays applications
-# shipping a .desktop file. It is a wrapper around dmenu, so you need that
-# installed.
-bindsym $mod+d exec --no-startup-id ~/.bin/rofi_launcher
+# 
+# for rofi launcher by user
+bindsym $mod+d exec rofi -show drun 
+bindsym $mod+Ctrl+d exec rofi -show window 
 
 # change focus
-bindsym $mod+j focus left
-bindsym $mod+k focus down
-bindsym $mod+l focus up
-bindsym $mod+semicolon focus right
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
@@ -66,19 +80,13 @@ bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
 # move focused window
-bindsym $mod+Shift+j move left
-bindsym $mod+Shift+k move down
-bindsym $mod+Shift+l move up
-bindsym $mod+Shift+semicolon move right
-
-# alternatively, you can use the cursor keys:
-bindsym $mod+Shift+Left move left
-bindsym $mod+Shift+Down move down
-bindsym $mod+Shift+Up move up
-bindsym $mod+Shift+Right move right
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
 
 # split in horizontal orientation
-bindsym $mod+h split h
+bindsym $mod+g split h
 
 # split in vertical orientation
 bindsym $mod+v split v
@@ -92,13 +100,15 @@ bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 
 # toggle tiling / floating
-bindsym $mod+Shift+space floating toggle
+bindsym $mod+Shift+t floating toggle
 
 # change focus between tiling / floating windows
-bindsym $mod+space focus mode_toggle
+bindsym $mod+t focus mode_toggle
 
 # focus the parent container
 bindsym $mod+a focus parent
+
+focus_follows_mouse no
 
 # focus the child container
 #bindsym $mod+d focus child
@@ -155,10 +165,10 @@ mode "resize" {
         # Pressing right will grow the window’s width.
         # Pressing up will shrink the window’s height.
         # Pressing down will grow the window’s height.
-        bindsym j resize shrink width 10 px or 10 ppt
-        bindsym k resize grow height 10 px or 10 ppt
-        bindsym l resize shrink height 10 px or 10 ppt
-        bindsym semicolon resize grow width 10 px or 10 ppt
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
 
         # same bindings, but for the arrow keys
         bindsym Left resize shrink width 10 px or 10 ppt
@@ -174,20 +184,50 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-# Start i3bar to display a workspace bar polybar
-
-exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-
-# Set by user
-bindsym Mod1+Control+1 exec dm-tool lock
-bindsym Control+Mod1+t exec --no-startup-id ~/.bin/run_urxvt
-
-exec --no-startup-id light-locker --lock-on-suspend
+# Start i3bar to display a workspace bar (plus the system information i3status
+# finds out, if available)
+bar {
+    font pango:Source Code Pro Medium 10, Font Awesome 5 Free
+    position top
+    strip_workspace_numbers yes
+    mode dock
+    tray_output primary
+    status_command i3status-rs
+    workspace_min_width 40
+    colors {
+        separator #666666
+        background #0d0015
+        statusline #dddddd
+        focused_workspace #0088cc #0088cc #ffffff
+        active_workspace #333333 #333333 #ffffff
+        inactive_workspace #333333 #333333 #888888
+        urgent_workspace #2f343a #900000 #ffffff
+    }
+}
 
 # application setting(float)
-for_window [class="Gimp"] floating enable.
-for_window [class="feh"] floating enable.
-for_window [class="Sxiv"] floating enable.
+for_window [instance="NmTui"] floating enable
+for_window [class="photo-shooting"] floating enable
+for_window [class="Lxappearance"] floating enable
+for_window [class="Pavucontrol"] floating enable
+for_window [class="Arandr"] floating enable
+for_window [class="feh"] floating enable
+for_window [class="Discord"] floating enable
+for_window [instance="floatterm"] floating enable, move position center, resize set 1100 700
 
 # assign workspace
 assign [class="Slack"] 9
+assign [class="Skype"] 8
+assign [class="mpv"]   7
+# Space between windows
+gaps inner 6
+gaps outer 6
+
+for_window [class="^.*"] border pixel 2
+new_window 1pixel
+
+client.focused          #da2263 #d70a53 #ffffff #da2263   #da2263
+client.focused_inactive #2E1A47 #5f676a #ffffff #371f55   #371f55
+client.unfocused        #2E1A47 #222222 #888888 #292d2e   #371f55
+client.urgent           #2E1A47 #900000 #ffffff #900000   #371f55
+client.placeholder      #2E1A47 #0c0c0c #ffffff #000000   #371f55
