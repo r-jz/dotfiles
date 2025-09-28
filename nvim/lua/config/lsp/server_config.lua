@@ -37,9 +37,6 @@ local server_configs = {
         clangd = {
                 settings = {},
         },
-        tsserver = {
-                settings = {},
-        },
         cmake = {
                 settings = {},
         },
@@ -66,6 +63,8 @@ local server_configs = {
         ansiblels = {
                 settings = {},
         },
+        hls = {},
+        rust_analyzer = {},
 }
 
 return server_configs

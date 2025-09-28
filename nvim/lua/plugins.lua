@@ -40,12 +40,12 @@ return {
   -- trouble
   {
     "folke/trouble.nvim",
-    cmd = { "Trouble", "TroubleToggle", "TroubleRefresh" },
+    cmd = { "Trouble" },
     opt = true,
     dependencies = { "nvim-tree/nvim-web-devicons" },
     init = function()
       local opts = { noremap = true, silent = true }
-      vim.keymap.set("n", "<Leader>xx", "<cmd>TroubleToggle<CR>", opts)
+      vim.keymap.set("n", "<Leader>xx", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", opts)
       vim.keymap.set("n", "<leader>xw", "<cmd>Trouble workspace_diagnostics<cr>", opts)
       vim.keymap.set("n", "<leader>xd", "<cmd>Trouble document_diagnostics<cr>", opts)
       vim.keymap.set("n", "<leader>xl", "<cmd>Trouble loclist<cr>", opts)
@@ -79,50 +79,37 @@ return {
 
   -- which-key
   {
-    'folke/which-key.nvim',
+    "folke/which-key.nvim",
     lazy = true,
     cmd = {
-        "WhichKey",
+      "WhichKey",
     },
     opts = {},
   },
+  -- rustaceanvim
+  -- {
+  --   "mrcjkb/rustaceanvim",
+  --   version = "^5", -- Recommended
+  --   lazy = false, -- This plugin is already lazy
+  -- },
 
-  -- rust
-  {
-    "simrat39/rust-tools.nvim",
-    ft = "rust",
-    config = function()
-      local rt = require("rust-tools")
-      local lsp = require("config.lsp")
-      rt.setup({
-        server = {
-          on_attach = function(client, bufnr)
-            vim.keymap.set("n", "<Ctrl-k>", rt.hover_actions.hover_actions, { buffer = bufnr })
-            -- Code action groups
-            vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
-            lsp.on_attach(client, bufnr)
-          end,
-        },
-      })
-    end,
-  },
   -- haskell
   {
-  'mrcjkb/haskell-tools.nvim',
-  dependencies = {
-    'nvim-lua/plenary.nvim',
-  },
-  init = function ()
+    "mrcjkb/haskell-tools.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    init = function()
       vim.g.haskell_tools = {
         tools = {
           repl = {
             handler = "toggleterm",
-          }
-        }
+          },
+        },
       }
-  end,
-  version = '^2', -- Recommended
-  ft = { 'haskell', 'lhaskell', 'cabal', 'cabalproject' },
+    end,
+    version = "^2", -- Recommended
+    ft = { "haskell", "lhaskell", "cabal", "cabalproject" },
   },
 
   -- fidget
@@ -136,17 +123,17 @@ return {
   },
   -- aerial
   {
-    'stevearc/aerial.nvim',
+    "stevearc/aerial.nvim",
     opts = {},
     cmd = "AerialToggle",
-    keys = {"<leader>a"},
-    init = function ()
+    keys = { "<leader>a" },
+    init = function()
       vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>")
     end,
     -- Optional dependencies
     dependencies = {
-       "nvim-treesitter/nvim-treesitter",
-       "nvim-tree/nvim-web-devicons"
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
     },
   },
 
@@ -273,7 +260,7 @@ return {
     "akinsho/toggleterm.nvim",
     -- lazy = true,
     cmd = "ToggleTerm",
-    keys = {"<C-\\>"},
+    keys = { "<C-\\>" },
     opts = {
       size = function(term)
         if term.direction == "horizontal" then
@@ -397,7 +384,7 @@ return {
     end,
     opts = {
       hijack_unnamed_buffer_when_opening = true,
-      disable_netrw = true
+      disable_netrw = true,
     },
   },
 
@@ -440,12 +427,35 @@ return {
     end,
   },
 
+<<<<<<< Updated upstream
+=======
+  -- sticky
+  {
+    "stevearc/stickybuf.nvim",
+    event = "BufWinEnter",
+    opts = {},
+  },
+
+>>>>>>> Stashed changes
   -- notify
   {
     "rcarriga/nvim-notify",
-    lazy = false,
-    config = function()
-      vim.notify = require("notify")
-    end,
+    -- lazy = false,
+    -- config = function()
+    --   vim.notify = require("notify")
+    -- end,
   },
+<<<<<<< Updated upstream
+=======
+
+  -- fcitx5
+  {
+    "h-hg/fcitx.nvim",
+    lazy = false,
+  },
+
+  {
+    'marko-cerovac/material.nvim'
+  },
+>>>>>>> Stashed changes
 }
