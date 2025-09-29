@@ -7,8 +7,10 @@ ts_configs.setup({
   -- Install languages synchronously (only applied to `ensure_installed`)
   sync_install = false,
 
+  auto_install = true,
   -- List of parsers to ignore installing
   ignore_install = {},
+
   context_commentstring = {
     enable = true,
   },
@@ -25,7 +27,6 @@ ts_configs.setup({
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
     -- Instead of true it can also be a list of languages
     additional_vim_regex_highlighting = false,
-    use_languagetree = true,
   },
   pyfold = {
     enable = true,
@@ -52,5 +53,5 @@ ts_configs.setup({
   }
 })
 
-vim.opt.foldmethod = "expr"
+vim.wo.foldmethod = "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"

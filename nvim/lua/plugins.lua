@@ -59,40 +59,65 @@ return {
   -- lsp config
   {
     "neovim/nvim-lspconfig",
-    dependencies = { "ray-x/lsp_signature.nvim" },
     event = { "BufReadPre", "BufNewFile" },
     config = function()
-      local lsp = require("config.lsp")
-      lsp.lsp_config()
+      require("config.lsp")
     end,
   },
 
   {
-    "williamboman/mason.nvim",
-    lazy = false,
-    dependencies = { "williamboman/mason-lspconfig.nvim" },
-    config = function()
-      require("mason").setup()
-      require("mason-lspconfig").setup()
-    end,
+    "ray-x/lsp_signature.nvim",
+    event = "InsertEnter",
+    opts = {
+      bind = true,
+      handler_opts = {
+        border = "rounded",
+      },
+    },
   },
 
+  {
+    "mason-org/mason.nvim",
+    build = ":MasonUpdate",
+    cmd = {
+      "Mason",
+      "MasonInstall",
+      "MasonUninstall",
+      "MasonUninstallAll",
+      "MasonLog",
+    },
+    opts = {},
+  },
+
+  {
+    "mason-org/mason-lspconfig.nvim",
+    opts = {
+      ensure_installed = { "lua_ls", "stylua" },
+    },
+    dependencies = {
+      "mason-org/mason.nvim",
+      "neovim/nvim-lspconfig",
+    },
+    event = "BufReadPost",
+  },
   -- which-key
   {
     "folke/which-key.nvim",
-    lazy = true,
     cmd = {
       "WhichKey",
     },
     opts = {},
   },
-  -- rustaceanvim
-  -- {
-  --   "mrcjkb/rustaceanvim",
-  --   version = "^5", -- Recommended
-  --   lazy = false, -- This plugin is already lazy
-  -- },
 
+  {
+    "Wansmer/treesj",
+    keys = { "<space>m", "<space>j", "<space>s" },
+    dependencies = { "nvim-treesitter/nvim-treesitter" }, -- if you install parsers with `nvim-treesitter`
+    config = function()
+      require("treesj").setup({--[[ your config ]]
+      })
+    end,
+  },
   -- haskell
   {
     "mrcjkb/haskell-tools.nvim",
@@ -126,7 +151,6 @@ return {
     "stevearc/aerial.nvim",
     opts = {},
     cmd = "AerialToggle",
-    keys = { "<leader>a" },
     init = function()
       vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>")
     end,
@@ -357,13 +381,6 @@ return {
     ft = "python",
   },
 
-  -- symbols outline
-  {
-    "simrat39/symbols-outline.nvim",
-    config = function()
-      require("symbols-outline").setup()
-    end,
-  },
 
   -- nvim-tree
   {
@@ -410,7 +427,6 @@ return {
       formatters_by_ft = {
         lua = { "stylua" },
         python = { "autopep8", "isort" },
-        javascript = { { "prettierd", "prettier" } },
       },
       -- Set up format-on-save
       -- format_on_save = { timeout_ms = 500, lsp_fallback = true },
@@ -427,8 +443,6 @@ return {
     end,
   },
 
-<<<<<<< Updated upstream
-=======
   -- sticky
   {
     "stevearc/stickybuf.nvim",
@@ -436,7 +450,6 @@ return {
     opts = {},
   },
 
->>>>>>> Stashed changes
   -- notify
   {
     "rcarriga/nvim-notify",
@@ -445,8 +458,6 @@ return {
     --   vim.notify = require("notify")
     -- end,
   },
-<<<<<<< Updated upstream
-=======
 
   -- fcitx5
   {
@@ -454,8 +465,4 @@ return {
     lazy = false,
   },
 
-  {
-    'marko-cerovac/material.nvim'
-  },
->>>>>>> Stashed changes
 }

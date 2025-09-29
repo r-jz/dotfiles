@@ -1,12 +1,9 @@
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 
-local server_configs = require("config.lsp.server_config")
-local lspconfig = require("lspconfig")
-
 vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
+-- vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
+-- vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
 vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist)
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
@@ -16,7 +13,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     -- Enable completion triggered by <c-x><c-o>
     vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
 
-    require("lsp_signature").on_attach()
     -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = { buffer = ev.buf }
@@ -39,52 +35,3 @@ vim.api.nvim_create_autocmd("LspAttach", {
     -- end, opts)
   end,
 })
-
-return {
-  lsp_config = function()
-    -- local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
-    -- for type, icon in pairs(signs) do
-    --   local hl = "DiagnosticSign" .. type
-    --   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-    -- end
-    --
-    vim.diagnostic.config({
-      virtual_text = false,
-      underline = true,
-      update_in_insert = false,
-      severity_sort = false,
-      signs = {
-        text = {
-          [vim.diagnostic.severity.ERROR] = "",
-          [vim.diagnostic.severity.WARN] = "",
-          [vim.diagnostic.severity.INFO] = "",
-          [vim.diagnostic.severity.HINT] = "",
-        },
-      }
-    })
-    vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-      border = "rounded",
-    })
-
-    vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-      border = "rounded",
-    })
-
-    local capabilities = vim.lsp.protocol.make_client_capabilities()
-    capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-    -- Float diahnostic window when
-    -- rust
-    for server_name, configs in pairs(server_configs) do
-      local settings = configs["settings"]
-      local flags = configs["flags"]
-      if flags == nil then
-        flags = {}
-      end
-      lspconfig[server_name].setup({
-        flags = flags,
-        capabilities = capabilities,
-        settings = settings,
-      })
-    end
-  end,
-}
