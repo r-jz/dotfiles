@@ -381,7 +381,6 @@ return {
     ft = "python",
   },
 
-
   -- nvim-tree
   {
     "nvim-tree/nvim-tree.lua",
@@ -394,10 +393,25 @@ return {
       "NvimTreeRefresh",
     },
     init = function()
+      local function open_nvim_tree(data)
+        -- buffer is a directory
+        local directory = vim.fn.isdirectory(data.file) == 1
+
+        if not directory then
+          return
+        end
+
+        -- change to the directory
+        vim.cmd.cd(data.file)
+
+        -- open the tree
+        require("nvim-tree.api").tree.open()
+      end
       local silent = { silent = true }
       vim.keymap.set("n", "<C-n>", [[<cmd>NvimTreeToggle<cr>]], silent)
       vim.keymap.set("n", "<Leader>nr", [[<cmd>NvimTreeRefresh<cr>]], silent)
       vim.keymap.set("n", "<Leader>nf", [[<cmd>NvimTreeFindFile<cr>]], silent)
+      vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
     end,
     opts = {
       hijack_unnamed_buffer_when_opening = true,
@@ -464,5 +478,4 @@ return {
     "h-hg/fcitx.nvim",
     lazy = false,
   },
-
 }
