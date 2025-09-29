@@ -18,6 +18,7 @@ cmp.setup({
     end,
   },
   mapping = cmp.mapping.preset.insert({
+    -- ["<A-y>"] = require('minuet').make_cmp_map(),
     ["<C-b>"] = cmp.mapping.scroll_docs(-4),
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
     ["<C-e>"] = cmp.mapping.abort(),
@@ -59,6 +60,7 @@ cmp.setup({
     { name = "path" },
     { name = "buffer" },
     { name = "nvim_lua" },
+    { name = "minuet" },
   }),
   formatting = {
     format = lspkind.cmp_format({
@@ -66,12 +68,13 @@ cmp.setup({
       menu = {
         buffer = "[Buffer]",
         nvim_lsp = "[LSP]",
-        path = "[[Path]]",
+        path = "[Path]",
         luasnip = "[LuaSnip]",
         nvim_lua = "[Lua]",
       },
     }),
   },
+  performance = { fetching_timeout = 2000 },
 })
 
 -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).

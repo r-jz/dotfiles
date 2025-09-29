@@ -411,7 +411,8 @@ return {
       vim.keymap.set("n", "<C-n>", [[<cmd>NvimTreeToggle<cr>]], silent)
       vim.keymap.set("n", "<Leader>nr", [[<cmd>NvimTreeRefresh<cr>]], silent)
       vim.keymap.set("n", "<Leader>nf", [[<cmd>NvimTreeFindFile<cr>]], silent)
-      vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
+      -- local grp = vim.api.nvim_create_augroup("NvimTreeStarter", { clear = true })
+      vim.api.nvim_create_autocmd({ "VimEnter" }, { group = grp, callback = open_nvim_tree })
     end,
     opts = {
       hijack_unnamed_buffer_when_opening = true,
@@ -477,5 +478,79 @@ return {
   {
     "h-hg/fcitx.nvim",
     lazy = false,
+  },
+
+  -- markdown
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = { enabled = filetype == "markdown", completions = { lsp = { enabled = true } },},
+    ft = { "markdown", "codecompanion" },
+    cmd = { "RenderMarkdown" },
+    keys = { { "<leader>mt", "<cmd>RenderMarkdown toggle<cr>", desc = "toggle render-markdown"} }
+  },
+
+  -- ai
+  {
+    "milanglacier/minuet-ai.nvim",
+    cond = function ()
+      return false
+    end,
+    config = function()
+      require("minuet").setup({
+        virtualtext = {
+          auto_trigger_ft = {},
+          keymap = {
+            -- accept whole completion
+            accept = "<A-A>",
+            -- accept one line
+            accept_line = "<A-a>",
+            -- accept n lines (prompts for number)
+            -- e.g. "A-z 2 CR" will accept 2 lines
+            accept_n_lines = "<A-z>",
+            -- Cycle to prev completion item, or manually invoke completion
+            prev = "<A-[>",
+            -- Cycle to next completion item, or manually invoke completion
+            next = "<A-]>",
+            dismiss = "<A-e>",
+          },
+        },
+        provider = "gemini",
+      })
+    end,
+  },
+  {
+    "olimorris/codecompanion.nvim",
+    cond = function ()
+      return true
+    end,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    cmd = { "CodeCompanion", "CodeCompanionActions", "CodeCompanionChat" },
+    keys = {
+      { "<Space>cc", "<Cmd>CodeCompanionChat Toggle<CR>", mode = { "n" } },
+      { "<Space>cc", "<Cmd>CodeCompanionChat<CR>", mode = { "v" } },
+      { "<Space>ca", "<Cmd>CodeCompanionActions<CR>", mode = { "n", "x" } },
+    },
+    opts = {
+      -- NOTE: The log_level is in `opts.opts`
+      strategies = {
+        chat = {
+          adapter = "gemini",
+        },
+        inline = {
+          adapter = "gemini",
+        },
+        cmd = {
+          adapter = "gemini",
+        },
+      },
+      opts = {
+        log_level = "TRACE", -- or "TRACE"
+      },
+    },
   },
 }

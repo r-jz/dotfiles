@@ -1,73 +1,55 @@
-local api = vim.api
-local cmd = vim.cmd
-local set_keymap = api.nvim_set_keymap
-local o, wo, bo = vim.o, vim.wo, vim.bo
-
+vim.g.mapleader = " "
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-vim.loader.enable()
-vim.g.mapleader = " "
 vim.g.loaded_python_provider = 0
+
 vim.g.loaded_python3_provider = 0
-require('lazyvim')
+vim.loader.enable()
 
+require("lazyvim")
 
---o.title = true
-o.updatetime = 250
-wo.signcolumn = "yes"
-wo.number = true
-wo.relativenumber = true
+local opt = vim.opt
+opt.updatetime = 250
+opt.signcolumn = "yes"
+opt.number = true
+opt.relativenumber = true
+
 -- indent
-bo.autoindent = true
-bo.smartindent = true
-bo.expandtab = true
-o.expandtab = true
-bo.tabstop = 2
-bo.softtabstop = -1
-bo.shiftwidth = 0
+opt.expandtab = true
+opt.tabstop = 2
+opt.shiftwidth = 0
+opt.softtabstop = -1
+opt.autoindent = true
+opt.smartindent = true
 
 -- search
+opt.hlsearch = true
+opt.incsearch = true
+opt.ignorecase = true
+opt.smartcase = true
+opt.wrapscan = true
 
-o.hlsearch = true
-o.incsearch = true
-o.ignorecase = true
-o.smartcase = true
-o.smartcase = true
-o.wrapscan = true
---
-o.swapfile = false
-o.showcmd = true
-o.hidden = true
-o.swapfile = false
-o.autoread = true
-o.splitright = true
-o.autoread = true
-o.wildmenu = true
-o.showmatch = true
+opt.swapfile = false
+opt.undofile = true
+opt.hidden = true
+opt.autoread = true
+opt.splitright = true
+opt.wildmenu = true
+opt.showmatch = true
 
--- color scheme
-o.termguicolors = true
-o.background = "dark"
+opt.termguicolors = true
+opt.background = "dark"
 
--- clipboard
-vim.opt.clipboard:append({ "unnamedplus" })
+opt.clipboard:append("unnamedplus")
 
--- keymap
-set_keymap("n", "j", "gj", { noremap = true })
-set_keymap("n", "k", "gk", { noremap = true })
-set_keymap("v", "j", "gj", { noremap = true })
-set_keymap("v", "k", "gk", { noremap = true })
-
-vim.keymap.set("t", "<C-p>", "<Up>")
-
-set_keymap("n", "<C-h>", "<C-w>h", { noremap = true })
-set_keymap("n", "<C-j>", "<C-w>j", { noremap = true })
-set_keymap("n", "<C-k>", "<C-w>k", { noremap = true })
-set_keymap("n", "<C-l>", "<C-w>l", { noremap = true })
-
-set_keymap("n", "<C-Down>", "<cmd>bnext<CR>", { noremap = true, silent = false })
-set_keymap("n", "<C-Up>", "<cmd>bNext<CR>", { noremap = true, silent = false })
-
-cmd("syntax on")
-cmd("filetype plugin indent on")
-
+local map = vim.keymap.set
+local opts = { noremap = true, silent = true }
+map({"n","v"}, "j", "gj", opts)
+map({"n","v"}, "k", "gk", opts)
+map("t", "<C-p>", "<Up>", opts)
+map("n", "<C-h>", "<C-w>h", opts)
+map("n", "<C-j>", "<C-w>j", opts)
+map("n", "<C-k>", "<C-w>k", opts)
+map("n", "<C-l>", "<C-w>l", opts)
+map("n", "<C-Down>", "<cmd>bnext<CR>", opts)
+map("n", "<C-Up>",   "<cmd>bprevious<CR>", opts)
