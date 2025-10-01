@@ -12,6 +12,12 @@ return {
   },
   -- use({ "shaunsingh/moonlight.nvim" })
 
+  -- sticky
+  {
+    "stevearc/stickybuf.nvim",
+    opts = {},
+  },
+
   -- openbrowser
   {
     "tyru/open-browser.vim",
@@ -59,7 +65,6 @@ return {
   -- lsp config
   {
     "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
     config = function()
       require("config.lsp")
     end,
@@ -98,7 +103,6 @@ return {
       "mason-org/mason.nvim",
       "neovim/nvim-lspconfig",
     },
-    event = "BufReadPost",
   },
   -- which-key
   {
@@ -225,15 +229,6 @@ return {
     end,
   },
 
-  -- git-conflict
-  {
-    "akinsho/git-conflict.nvim",
-    config = function()
-      require("git-conflict").setup({})
-    end,
-    event = "BufWinEnter",
-  },
-
   -- statusline
   {
     "nvim-lualine/lualine.nvim",
@@ -251,7 +246,6 @@ return {
     dependencies = {
       { "lukas-reineke/cmp-under-comparator" },
       { "onsails/lspkind-nvim" },
-      { "rcarriga/cmp-dap" },
       { "hrsh7th/cmp-buffer" },
       { "hrsh7th/cmp-nvim-lsp" },
       { "hrsh7th/cmp-cmdline" },
@@ -348,76 +342,20 @@ return {
     dependencies = "telescope.nvim",
   },
 
-  -- nvim-dap
+  -- neo-tree
   {
-    "mfussenegger/nvim-dap",
-    init = function()
-      local dap = require("config.dap")
-      dap.dap.setup()
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v3.x",
+    init = function ()
+      local silent = {silent = true}
+      vim.keymap.set("n", "<C-n>", [[<cmd>Neotree toggle=true<cr>]], silent)
     end,
-    config = function()
-      local dap = require("config.dap")
-      dap.dap.config()
-    end,
-  },
-  {
-    "rcarriga/nvim-dap-ui",
     dependencies = {
-      "mfussenegger/nvim-dap",
-      "nvim-dap",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      "nvim-tree/nvim-web-devicons", -- optional, but recommended
     },
-    config = function()
-      local dap = require("config.dap")
-      dap.ui.config()
-    end,
-  },
-  {
-    "mfussenegger/nvim-dap-python",
-    dependencies = { "nvim-dap" },
-    config = function()
-      local dap = require("config.dap")
-      dap.dappy.config()
-    end,
-    ft = "python",
-  },
-
-  -- nvim-tree
-  {
-    "nvim-tree/nvim-tree.lua",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    cmd = {
-      "NvimTreeToggle",
-      "NvimTreeOpen",
-      "NvimTreeFindFile",
-      "NvimTreeFindFileToggle",
-      "NvimTreeRefresh",
-    },
-    init = function()
-      local function open_nvim_tree(data)
-        -- buffer is a directory
-        local directory = vim.fn.isdirectory(data.file) == 1
-
-        if not directory then
-          return
-        end
-
-        -- change to the directory
-        vim.cmd.cd(data.file)
-
-        -- open the tree
-        require("nvim-tree.api").tree.open()
-      end
-      local silent = { silent = true }
-      vim.keymap.set("n", "<C-n>", [[<cmd>NvimTreeToggle<cr>]], silent)
-      vim.keymap.set("n", "<Leader>nr", [[<cmd>NvimTreeRefresh<cr>]], silent)
-      vim.keymap.set("n", "<Leader>nf", [[<cmd>NvimTreeFindFile<cr>]], silent)
-      -- local grp = vim.api.nvim_create_augroup("NvimTreeStarter", { clear = true })
-      vim.api.nvim_create_autocmd({ "VimEnter" }, { group = grp, callback = open_nvim_tree })
-    end,
-    opts = {
-      hijack_unnamed_buffer_when_opening = true,
-      disable_netrw = true,
-    },
+    lazy = false, -- neo-tree will lazily load itself
   },
 
   -- conform
@@ -458,48 +396,48 @@ return {
     end,
   },
 
-  -- sticky
-  {
-    "stevearc/stickybuf.nvim",
-    event = "BufWinEnter",
-    opts = {},
-  },
-
-  -- notify
-  {
-    "rcarriga/nvim-notify",
-    -- lazy = false,
-    -- config = function()
-    --   vim.notify = require("notify")
-    -- end,
-  },
-
-  -- fcitx5
-  {
-    "h-hg/fcitx.nvim",
-    lazy = false,
-  },
-
   -- markdown
   {
-    'MeanderingProgrammer/render-markdown.nvim',
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    "MeanderingProgrammer/render-markdown.nvim",
+    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
-    opts = { enabled = filetype == "markdown", completions = { lsp = { enabled = true } },},
+    opts = { enabled = filetype == "markdown", completions = { lsp = { enabled = true } } },
     ft = { "markdown", "codecompanion" },
     cmd = { "RenderMarkdown" },
-    keys = { { "<leader>mt", "<cmd>RenderMarkdown toggle<cr>", desc = "toggle render-markdown"} }
+    keys = { { "<leader>mt", "<cmd>RenderMarkdown toggle<cr>", desc = "toggle render-markdown" } },
   },
-
-  -- ai
   {
     "milanglacier/minuet-ai.nvim",
-    cond = function ()
-      return false
-    end,
+    cond = vim.env.OLLAMA_API_KEY ~= nil,
+    cmd = { "Minuet" },
     config = function()
       require("minuet").setup({
+        provider = "openai_compatible",
+        n_completions = 1, -- recommend for local model for resource saving
+        -- I recommend beginning with a small context window size and incrementally
+        -- expanding it, depending on your local computing power. A context window
+        -- of 512, serves as an good starting point to estimate your computing
+        -- power. Once you have a reliable estimate of your local computing power,
+        -- you should adjust the context window to a larger value.
+        context_window = 512,
+        request_timeout = 10,
+        provider_options = {
+          openai_compatible = {
+            -- For Windows users, TERM may not be present in environment variables.
+            -- Consider using APPDATA instead.
+            api_key = "OLLAMA_API_KEY",
+            name = "Ollama",
+            stream = false,
+            end_point = "http://172.17.200.5:11434/v1/chat/completions",
+            model = "qwen2.5-coder:7b",
+            optional = {
+              max_tokens = 56,
+              top_p = 0.9,
+            },
+          },
+        },
+        notify = "debug",
         virtualtext = {
           auto_trigger_ft = {},
           keymap = {
@@ -517,15 +455,12 @@ return {
             dismiss = "<A-e>",
           },
         },
-        provider = "gemini",
       })
     end,
   },
   {
     "olimorris/codecompanion.nvim",
-    cond = function ()
-      return true
-    end,
+    cond = vim.env.OLLAMA_API_KEY ~= nil,
     dependencies = {
       "nvim-lua/plenary.nvim",
     },
@@ -536,16 +471,46 @@ return {
       { "<Space>ca", "<Cmd>CodeCompanionActions<CR>", mode = { "n", "x" } },
     },
     opts = {
-      -- NOTE: The log_level is in `opts.opts`
       strategies = {
         chat = {
-          adapter = "gemini",
+          adapter = {
+            name = "ollama",
+            model = "gpt-oss:120b",
+          },
+          keymaps = {
+            close = {
+              modes = { n = "<C-/>", i = "<C-/>" },
+            },
+          },
         },
         inline = {
-          adapter = "gemini",
+          adapter = { name = "ollama", model = "gpt-oss:120b" },
         },
         cmd = {
-          adapter = "gemini",
+          adapter = {
+            name = "ollama",
+            model = "gpt-oss:120b",
+          },
+        },
+      },
+      adapters = {
+
+        http = {
+          ollama = function()
+            return require("codecompanion.adapters").extend("ollama", {
+              env = {
+                url = "http://172.17.200.5:11434",
+                api_key = "OLLAMA_API_KEY",
+              },
+              headers = {
+                ["Content-Type"] = "application/json",
+                ["Authorization"] = "Bearer ${api_key}",
+              },
+              parameters = {
+                sync = true,
+              },
+            })
+          end,
         },
       },
       opts = {

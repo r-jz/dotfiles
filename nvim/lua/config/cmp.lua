@@ -8,9 +8,6 @@ local has_words_before = function()
 end
 
 cmp.setup({
-  enabled = function()
-    return vim.api.nvim_buf_get_option(0, "buftype") ~= "prompt" or require("cmp_dap").is_dap_buffer()
-  end,
   preselect = cmp.PreselectMode.None,
   snippet = {
     expand = function(args)
@@ -95,11 +92,6 @@ cmp.setup.cmdline(":", {
   }),
 })
 
-cmp.setup.filetype({ "dap-repl", "dapui_watches", "dapui_hover" }, {
-  sources = {
-    { name = "dap" },
-  },
-})
 
 vim.cmd([[highlight! CmpItemAbbrDeprecated guibg=NONE gui=strikethrough guifg=#808080]])
 -- blue

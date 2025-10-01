@@ -1,12 +1,10 @@
-vim.g.mapleader = " "
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-vim.g.loaded_python_provider = 0
 
-vim.g.loaded_python3_provider = 0
 vim.loader.enable()
-
-require("lazyvim")
+vim.g.mapleader = " "
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_node_provider = 0
 
 local opt = vim.opt
 opt.updatetime = 250
@@ -53,3 +51,6 @@ map("n", "<C-k>", "<C-w>k", opts)
 map("n", "<C-l>", "<C-w>l", opts)
 map("n", "<C-Down>", "<cmd>bnext<CR>", opts)
 map("n", "<C-Up>",   "<cmd>bprevious<CR>", opts)
+
+
+require("lazyvim")
