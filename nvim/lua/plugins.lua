@@ -342,22 +342,43 @@ return {
     dependencies = "telescope.nvim",
   },
 
-  -- neo-tree
+  -- nvim-tree
   {
-    "nvim-neo-tree/neo-tree.nvim",
-    branch = "v3.x",
-    init = function ()
-      local silent = {silent = true}
-      vim.keymap.set("n", "<C-n>", [[<cmd>Neotree toggle=true<cr>]], silent)
-    end,
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-      "nvim-tree/nvim-web-devicons", -- optional, but recommended
+    "nvim-tree/nvim-tree.lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    cmd = {
+      "NvimTreeToggle",
+      "NvimTreeOpen",
+      "NvimTreeFindFile",
+      "NvimTreeFindFileToggle",
+      "NvimTreeRefresh",
     },
-    lazy = false, -- neo-tree will lazily load itself
-  },
+    init = function()
+      local function open_nvim_tree(data)
+        -- buffer is a directory
+        local directory = vim.fn.isdirectory(data.file) == 1
 
+        if not directory then
+          return
+        end
+
+        -- change to the directory
+        vim.cmd.cd(data.file)
+
+        -- open the tree
+        require("nvim-tree.api").tree.open()
+      end
+      local silent = { silent = true }
+      vim.keymap.set("n", "<C-n>", [[<cmd>NvimTreeToggle<cr>]], silent)
+      vim.keymap.set("n", "<Leader>nr", [[<cmd>NvimTreeRefresh<cr>]], silent)
+      vim.keymap.set("n", "<Leader>nf", [[<cmd>NvimTreeFindFile<cr>]], silent)
+      vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
+    end,
+    opts = {
+      hijack_unnamed_buffer_when_opening = true,
+      disable_netrw = true,
+    },
+  },
   -- conform
   {
     "stevearc/conform.nvim",
