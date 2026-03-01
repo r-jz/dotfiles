@@ -53,5 +53,14 @@ map("n", "<C-l>", "<C-w>l", opts)
 map("n", "<C-Down>", "<cmd>bnext<CR>", opts)
 map("n", "<C-Up>",   "<cmd>bprevious<CR>", opts)
 
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { '<filetype>' },
+  callback = function()
+    vim.treesitter.start()
+    vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+    vim.wo[0][0].foldmethod = 'expr'
+  end,
+})
 
 require("lazyvim")
+

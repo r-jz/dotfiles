@@ -172,11 +172,9 @@ return {
 
   -- treesitter
   {
-    "nvim-treesitter/nvim-treesitter",
-    event = { "BufReadPost" },
-    config = function()
-      require("config.treesitter")
-    end,
+    'nvim-treesitter/nvim-treesitter',
+    lazy = false,
+    build = ':TSUpdate'
   },
 
   {
