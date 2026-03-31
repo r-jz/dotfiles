@@ -35,3 +35,20 @@ vim.api.nvim_create_autocmd("LspAttach", {
     -- end, opts)
   end,
 })
+
+vim.lsp.config("rust_analyzer", {
+  -- Server-specific settings. See `:help lsp-quickstart`
+  settings = {
+    ["rust-analyzer"] = {
+      cargo = {
+        cfgs = {
+          "gdb",
+          "trace_guest"
+        },
+        features = {
+          "trace_guest"
+        }
+      },
+    },
+  },
+})
