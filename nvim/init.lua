@@ -97,7 +97,6 @@ local function proc_comm_and_ppid(pid)
   return comm, ppid
 end
 
-
 local function gui_clipboard_provider()
   if vim.env.WAYLAND_DISPLAY and vim.fn.executable("waycopy") == 1 and vim.fn.executable("waypaste") == 1 then
     return "wayclip"
@@ -119,9 +118,10 @@ local function is_ssh_session()
 end
 
 local function is_tmux_client_over_ssh()
-  if not is_ssh_session() or not vim.env.TMUX or vim.env.TMUX == "" then
+  if not vim.env.TMUX or vim.env.TMUX == "" then
     return false
   end
+
   local pid = vim.fn.system("tmux display-message -p '#{client_pid}'"):gsub("%s+", "")
   if pid == "" then
     return false
@@ -139,6 +139,14 @@ local function is_tmux_client_over_ssh()
   end
 
   return false
+end
+
+local function should_use_ssh_clipboard()
+  if vim.env.TMUX and vim.env.TMUX ~= "" then
+    return is_tmux_client_over_ssh()
+  end
+
+  return is_ssh_session()
 end
 
 local function osc52_copy_only_provider()
@@ -175,8 +183,31 @@ local function osc52_copy_only_provider()
   }
 end
 
+local osc52_yank_group = vim.api.nvim_create_augroup("osc52_yank", { clear = true })
+
+local function sync_yanks_to_osc52()
+  vim.api.nvim_clear_autocmds({ group = osc52_yank_group })
+
+  if not should_use_ssh_clipboard() then
+    return
+  end
+
+  vim.api.nvim_create_autocmd("TextYankPost", {
+    group = osc52_yank_group,
+    callback = function()
+      local event = vim.v.event
+      if event.operator ~= "y" or event.regname == "_" then
+        return
+      end
+
+      require("vim.ui.clipboard.osc52").copy("+")(event.regcontents, event.regtype)
+    end,
+  })
+end
+
 local function set_clipboard()
-  if is_ssh_session() then
+  if should_use_ssh_clipboard() then
+    -- Over SSH, use OSC52 for copy only. Normal paste should stay local and instant.
     vim.g.clipboard = osc52_copy_only_provider()
     opt.clipboard = ""
   else
@@ -186,10 +217,14 @@ local function set_clipboard()
 end
 
 vim.api.nvim_create_autocmd({ "FocusGained", "VimResume" }, {
-  callback = set_clipboard,
+  callback = function()
+    set_clipboard()
+    sync_yanks_to_osc52()
+  end,
 })
 
 set_clipboard()
+sync_yanks_to_osc52()
 
 require("lazyvim")
 
