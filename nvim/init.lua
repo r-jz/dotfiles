@@ -135,9 +135,43 @@ local function is_tmux_client_over_ssh()
   return false
 end
 
+local function osc52_copy_only_provider()
+  local osc52 = require("vim.ui.clipboard.osc52")
+  local cache = {
+    ["+"] = { {}, "v" },
+    ["*"] = { {}, "v" },
+  }
+
+  local function copy(reg)
+    local osc52_copy = osc52.copy(reg)
+    return function(lines, regtype)
+      cache[reg] = { vim.deepcopy(lines), regtype }
+      osc52_copy(lines, regtype)
+    end
+  end
+
+  local function paste(reg)
+    return function()
+      return vim.deepcopy(cache[reg])
+    end
+  end
+
+  return {
+    name = "OSC52 copy-only",
+    copy = {
+      ["+"] = copy("+"),
+      ["*"] = copy("*"),
+    },
+    paste = {
+      ["+"] = paste("+"),
+      ["*"] = paste("*"),
+    },
+  }
+end
+
 local function set_clipboard()
   if is_tmux_client_over_ssh() then
-    vim.g.clipboard = "osc52"
+    vim.g.clipboard = osc52_copy_only_provider()
     opt.clipboard = ""
   else
     vim.g.clipboard = gui_clipboard_provider() or "osc52"
