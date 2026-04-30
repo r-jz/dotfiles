@@ -138,8 +138,10 @@ end
 local function set_clipboard()
   if is_tmux_client_over_ssh() then
     vim.g.clipboard = "osc52"
+    opt.clipboard = ""
   else
     vim.g.clipboard = gui_clipboard_provider() or "osc52"
+    opt.clipboard = "unnamedplus"
   end
 end
 
@@ -148,8 +150,6 @@ vim.api.nvim_create_autocmd({ "FocusGained", "VimResume" }, {
 })
 
 set_clipboard()
-
-opt.clipboard:append("unnamedplus")
 
 require("lazyvim")
 
