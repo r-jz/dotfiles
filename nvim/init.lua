@@ -112,8 +112,14 @@ local function gui_clipboard_provider()
   end
 end
 
+local function is_ssh_session()
+  return (vim.env.SSH_CONNECTION and vim.env.SSH_CONNECTION ~= "")
+    or (vim.env.SSH_CLIENT and vim.env.SSH_CLIENT ~= "")
+    or (vim.env.SSH_TTY and vim.env.SSH_TTY ~= "")
+end
+
 local function is_tmux_client_over_ssh()
-  if not vim.env.TMUX or vim.env.TMUX == "" then
+  if not is_ssh_session() or not vim.env.TMUX or vim.env.TMUX == "" then
     return false
   end
   local pid = vim.fn.system("tmux display-message -p '#{client_pid}'"):gsub("%s+", "")
@@ -170,7 +176,7 @@ local function osc52_copy_only_provider()
 end
 
 local function set_clipboard()
-  if is_tmux_client_over_ssh() then
+  if is_ssh_session() then
     vim.g.clipboard = osc52_copy_only_provider()
     opt.clipboard = ""
   else
