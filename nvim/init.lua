@@ -53,12 +53,25 @@ map("n", "<C-l>", "<C-w>l", opts)
 map("n", "<C-Down>", "<cmd>bnext<CR>", opts)
 map("n", "<C-Up>",   "<cmd>bprevious<CR>", opts)
 
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = { '<filetype>' },
-  callback = function()
-    vim.treesitter.start()
-    vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-    vim.wo[0][0].foldmethod = 'expr'
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function(args)
+    local ft = vim.bo[args.buf].filetype
+
+    local bt = vim.bo[args.buf].buftype
+    if bt ~= "" then
+      return
+    end
+
+    local lang = vim.treesitter.language.get_lang(ft)
+    if not lang then
+      return
+    end
+
+    if vim.treesitter.language.add(lang) then
+      vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+      vim.wo[0][0].foldmethod = 'expr'
+      vim.treesitter.start(args.buf, lang)
+    end
   end,
 })
 
@@ -140,3 +153,4 @@ opt.clipboard:append("unnamedplus")
 
 require("lazyvim")
 
+require("nvim-treesitter").install({ "lua", "vim", "markdown", "markdown_inline", "c", "cpp", "rust", "haskell", "python"})
